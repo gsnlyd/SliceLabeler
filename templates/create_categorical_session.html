@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Create Session{% endblock %}
+{% block body %}
+    <div class="main-container-800">
+        <div class="text-l">Create session for {{ dataset.name }}</div>
+        <form class="card-form card" method="POST">
+            {% set field_sizes = [20, 40, 40] %}
+            {% for field in [form.session_name, form.prompt, form.label_values] %}
+                {{ field.label(class_='text-m') }}
+                {% for error in field.errors %}
+                    <div class="text-s text-orange">{{ error }}</div>
+                {% endfor %}
+                {{ field(size=field_sizes[loop.index0], class_='form-input text-m') }}
+            {% endfor %}
+            {{ form.submit_button(class_='text-m submit-button') }}
+        </form>
+    </div>
+    <script>
+        const sessionNameInput = document.getElementById('session_name');
+        sessionNameInput.value = '{{ 'Session ' + (label_session_count + 1)|string }}'
+        sessionNameInput.focus();
+        sessionNameInput.select();
+    </script>
+{% endblock %}

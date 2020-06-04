@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}{{ dataset.name }} - Label{% endblock %}
+{% block body %}
+    <div class="main-container-full">
+        <div class="viewer-container card">
+            <div class="viewer-title text-m">
+                {% if viewer_mode == 'label' %}<a href="{{ url_for('session_overview', session_id=label_session_id) }}" class="viewer-session-link text-link text-orange">Back to {{ label_session.session_name }}</a>{% endif %}
+                <a href="{{ url_for('dataset_overview', dataset_name=dataset.name) }}" class="text-link text-m hover-underline">{{ dataset.name }}</a>
+                <span>/ {{ image.name }}</span>
+                {% if viewer_mode == 'label' %}<span class="viewer-prompt text-l">{{ prompt }}</span>{% endif %}
+            </div>
+            <div class="viewer-content-container">
+                <div class="viewer-slice-controls">
+                    <div class="text-m text-gray"><span id="current-slice"></span></div>
+                    <select class="viewer-select text-m" id="slice-type-select">
+                        {% for st in ['SAGITTAL', 'CORONAL', 'AXIAL'] %}
+                            <option value="{{ loop.index0 }}">{{ st.capitalize() }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="viewer-input-container">
+                        <label for="intensity-min" class="text-xs text-gray viewer-input-label">Min</label>
+                        <input id="intensity-min" type="number" class="text-m viewer-number-input" size="5" value="0">
+                    </div>
+                    <div class="viewer-input-container">
+                        <label for="intensity-max" class="text-xs text-gray viewer-input-label">Max</label>
+                        <input id="intensity-max" type="number" class="text-m viewer-number-input" value="{{ image_max }}">
+                    </div>
+                </div>
+                <div class="viewer-slices-container">
+                    <div class="viewer-slice-box" id="viewer-slice-box-main">
+                        <img class="viewer-slice" id="slice-main">
+                    </div>
+                    <div class="viewer-slice-box" id="viewer-slice-box-side-1">
+                        <div class="viewer-slice-guide-container">
+                            <img class="viewer-slice" id="slice-side-1">
+                            <div class="viewer-slice-guide" id="slice-guide-1"></div>
+                        </div>
+                    </div>
+                    <div class="viewer-slice-box" id="viewer-slice-box-side-2">
+                        <div class="viewer-slice-guide-container">
+                            <img class="viewer-slice" id="slice-side-2">
+                            <div class="viewer-slice-guide" id="slice-guide-2"></div>
+                        </div>
+                    </div>
+                    <div class="viewer-slice-box" id="viewer-slice-box-side-3">
+                        <div class="viewer-slice-guide-container">
+                            <img class="viewer-slice" id="slice-side-3">
+                            <div class="viewer-slice-guide" id="slice-guide-3"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="viewer-label-controls">
+                    {% if viewer_mode == 'label' %}
+                        {% for lv in label_values %}
+                            {% set selected = (lv == image_label_value) %}
+                            <button class="viewer-label-button text-m {% if selected %}selected{% endif %}" data-label-value="{{ lv }}">{{ lv }}</button>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        const sliceCounts = [{{ slice_counts[0] }}, {{ slice_counts[1] }}, {{ slice_counts[2] }}];
+        const datasetName = '{{ dataset.name }}';
+        const imageName = '{{ image.name }}';
+        const imageIndex = {{ image_index }};
+        const imageCount = {{ image_count }};
+
+        let sliceIndices = sliceCounts.map(c => Math.floor(c / 2));
+    </script>
+    <script type="text/javascript" src="/static/js/viewer.js"></script>
+    {% if viewer_mode == 'label' %}
+        <script type="text/javascript">
+            const labelSessionId = {{ label_session_id }};
+        </script>
+        <script type="text/javascript" src="/static/js/categorical.js"></script>
+    {% endif %}
+{% endblock %}

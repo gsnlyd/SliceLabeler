@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Datasets{% endblock %}
+{% block body %}
+    <div class="main-container-800">
+        <div class="text-header">Datasets</div>
+        <div class="datasets-list">
+            {% for dataset, images in datasets %}
+            <div class="datasets-dataset card">
+                <div class="text-l align-center">
+                    <span class="weight-medium">{{ dataset.name }}</span>
+                    <span class="text-gray">({{ images|length }} images)</span>
+                </div>
+                <div class="datasets-dataset-info align-center">
+                    <a href="{{ url_for('dataset_overview', dataset_name=dataset.name) }}" class="text-link text-m weight-medium text text-orange">View Dataset</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
