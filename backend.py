@@ -113,7 +113,8 @@ def get_slice(d_img: DataImage, slice_index: int, slice_type: SliceType,
     else:  # AXIAL
         slice_data = data[:, :, slice_index]
 
-    slice_data = slice_data.squeeze(axis=2)
+    if len(slice_data.shape) > 2:
+        slice_data = slice_data.squeeze(axis=2)
     slice_data = np.clip(slice_data, intensity_min, intensity_max)
     slice_data = ((slice_data / intensity_max) * 255).astype('uint8')
     slice_data = np.flip(slice_data.T, axis=0)
