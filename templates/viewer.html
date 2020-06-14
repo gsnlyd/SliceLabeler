@@ -25,6 +25,57 @@
                         <label for="intensity-max" class="text-xs text-gray viewer-input-label">Max</label>
                         <input id="intensity-max" type="number" class="text-m viewer-number-input" value="{{ image_max }}">
                     </div>
+                    <div>
+                        <h3 class="text-m keymap-header">Keymap</h3>
+                        <table class="keymap-table">
+                            <tbody class="text-xs">
+                                <tr>
+                                    <td>&larr;</td>
+                                    <td class="text-gray">Prev. Slice</td>
+                                </tr>
+                                <tr>
+                                    <td>&rarr;</td>
+                                    <td class="text-gray">Next Slice</td>
+                                </tr>
+                                <tr>
+                                    <td class="keymap-pad">+Shift</td>
+                                    <td class="text-gray">Faster</td>
+                                </tr>
+                                <tr><td class="keymap-space"></td></tr>
+                                <tr>
+                                    <td>&uarr;</td>
+                                    <td class="text-gray">Prev. Orientation</td>
+                                </tr>
+                                <tr>
+                                    <td>&darr;</td>
+                                    <td class="text-gray">Next Orientation</td>
+                                </tr>
+                                <tr><td class="keymap-space"></td></tr>
+                                <tr>
+                                    <td>U</td>
+                                    <td class="text-gray">Prev. Image</td>
+                                </tr>
+                                <tr>
+                                    <td>Space</td>
+                                    <td class="text-gray">Next Image</td>
+                                </tr>
+                                <tr><td class="keymap-space"></td></tr>
+                                <tr>
+                                    <td>E</td>
+                                    <td class="text-gray">-Brightness</td>
+                                </tr>
+                                <tr>
+                                    <td>R</td>
+                                    <td class="text-gray">+Brightness</td>
+                                </tr>
+                                <tr><td class="keymap-space"></td></tr>
+                                <tr>
+                                    <td>1-9</td>
+                                    <td class="text-gray">Label</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="viewer-slices-container">
                     <div class="viewer-slice-box" id="viewer-slice-box-main">
@@ -50,12 +101,12 @@
                     </div>
                 </div>
                 <div class="viewer-label-controls">
-                    {% if viewer_mode == 'label' %}
-                        {% for lv in label_values %}
-                            {% set selected = (lv == image_label_value) %}
-                            <button class="viewer-label-button text-m {% if selected %}selected{% endif %}" data-label-value="{{ lv }}">{{ lv }}</button>
-                        {% endfor %}
-                    {% endif %}
+                {% if viewer_mode == 'label' %}
+                {% for lv in label_values %}
+                    {% set selected = (lv == image_label_value) %}
+                    <button class="viewer-label-button text-m {% if selected %}selected{% endif %}" data-label-value="{{ lv }}">{{ lv }} ({{ loop.index }})</button>
+                {% endfor %}
+                {% endif %}
                 </div>
             </div>
         </div>

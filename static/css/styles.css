@@ -8,6 +8,13 @@ body {
     background-color: var(--background-c1);
 }
 
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+
+    font-weight: normal;
+    font-size: 20px;
+}
+
 :root {
     --background-c1: #0D0D0F;
     --background-c2: #1C1F28;
@@ -396,6 +403,22 @@ body {
 
 
 
+.keymap-header {
+    margin-top: 30px;
+}
+.keymap-table {
+    margin-top: 10px;
+    border-spacing: 0;
+}
+.keymap-pad {
+    padding-right: 15px;
+}
+.keymap-space {
+    padding-top: 20px;
+}
+
+
+
 .viewer-container {
     padding: 10px 20px;
 }
@@ -420,7 +443,6 @@ body {
 }
 
 .viewer-slice-controls {
-    max-width: 980px;
     margin-bottom: 20px;
 
     display: flex;

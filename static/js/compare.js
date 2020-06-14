@@ -118,13 +118,13 @@ document.addEventListener('keydown', ev => {
     }
 
     if (ev.code === 'KeyE') {
-        maxIntensityEl1.value = maxIntensityEl1.value / 2;
-        maxIntensityEl2.value = maxIntensityEl2.value / 2;
+        maxIntensityEl1.value = maxIntensityEl1.value * 2;
+        maxIntensityEl2.value = maxIntensityEl2.value * 2;
         updateSlices();
     }
     else if (ev.code === 'KeyR') {
-        maxIntensityEl1.value = maxIntensityEl1.value * 2;
-        maxIntensityEl2.value = maxIntensityEl2.value * 2;
+        maxIntensityEl1.value = maxIntensityEl1.value / 2;
+        maxIntensityEl2.value = maxIntensityEl2.value / 2;
         updateSlices();
     }
     else if (ev.code === 'Space') {

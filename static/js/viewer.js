@@ -119,11 +119,11 @@ document.addEventListener('keydown', ev => {
         ev.preventDefault();
     }
     else if (ev.code === 'KeyE') {
-        maxIntensityEl.value = maxIntensityEl.value / 2;
+        maxIntensityEl.value = maxIntensityEl.value * 2;
         updateSlices();
     }
     else if (ev.code === 'KeyR') {
-        maxIntensityEl.value = maxIntensityEl.value * 2;
+        maxIntensityEl.value = maxIntensityEl.value / 2;
         updateSlices();
     }
 });
