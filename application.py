@@ -5,7 +5,7 @@ from flask import Flask, redirect, url_for, render_template, abort, request, jso
 from wtforms.validators import NumberRange
 
 import backend
-from forms import CreateCategoricalSessionForm, CreateComparisonSessionForm
+from forms import CreateCategoricalSessionForm, CreateComparisonSessionForm, ComparisonNumberRange
 from model import db
 
 application = Flask(__name__)
@@ -177,13 +177,13 @@ def create_comparison_session(dataset_name: str):
     for li in comparison_lists:
         form.comparison_list.choices.append((li, li))
 
-    form.image_count.validators.append(NumberRange(min=1, max=total_image_count,
-                                                   message='Must be between %(min)s and %(max)s (the dataset size).'))
+    form.image_count.validators.append(ComparisonNumberRange(
+        min=1, max=total_image_count, message='Must be between %(min)s and %(max)s (the dataset size).'))
 
     if form.validate_on_submit():
         if form.session_name.data in [se.session_name for se in current_sessions]:
             form.session_name.errors.append('Session name already in use.')
-        elif form.min_slice_percent.data >= form.max_slice_percent.data:
+        elif form.comparison_list.data == 'create' and form.min_slice_percent.data >= form.max_slice_percent.data:
             form.max_slice_percent.errors.append('Max must be greater than min.')
         else:
             slice_type = backend.SliceType[form.slice_type.data]
@@ -371,4 +371,3 @@ def api_set_comparison_label():
     return jsonify({
         'success': True
     })
-

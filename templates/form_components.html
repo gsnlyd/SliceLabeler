@@ -1,0 +1,6 @@
+{% macro label_and_errors(field) %}
+    {{ field.label(class_='form-label text-s text-gray') }}
+    {% for error in field.errors %}
+        <div class="text-xs text-orange">{{ error }}</div>
+    {% endfor %}
+{% endmacro %}

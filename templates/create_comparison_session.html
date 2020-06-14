@@ -1,61 +1,82 @@
 {% extends 'base.html' %}
-{% block title %}Create Comparison Session{% endblock %}
+{% import 'form_components.html' as form_components %}
+{% block title %}{{ dataset.name }}: New Comparison Session{% endblock %}
 {% block body %}
-    <div class="main-container-800">
-        <div class="text-l">Create session for {{ dataset.name }}</div>
-        <form class="card-form card" method="POST">
-            {% set text_field_sizes = [20, 30] %}
-            {% for field in [form.session_name, form.prompt] %}
-                {{ field.label(class_='text-m') }}
-                {% for error in field.errors %}
-                    <div class="text-s text-orange">{{ error }}</div>
-                {% endfor %}
-                {{ field(size=text_field_sizes[loop.index0], class='form-input text-m') }}
-            {% endfor %}
-            {{ form.comparison_list.label(class_='text-m') }}
-            {{ form.comparison_list(class_='form-select text-m') }}
-            {{ form.slice_type.label(class_='text-m') }}
-            {{ form.slice_type(class_='form-select text-m') }}
-            {% set number_field_defaults = [total_image_count, 1000, 2000, 0, 100] %}
-            {% for field in [form.image_count, form.slice_count, form.comparison_count, form.min_slice_percent, form.max_slice_percent] %}
-                {{ field.label(class_='text-m') }}
-                {% for error in field.errors %}
-                    <div class="text-s text-orange">{{ error }}</div>
-                {% endfor %}
-                {{ field(class_='form-input text-m', value=number_field_defaults[loop.index0]) }}
-            {% endfor %}
-            {{ form.submit_button(class_='text-m submit-button') }}
-        </form>
+    <div class="main-container-800 container-offset">
+        <div class="create-form-container card">
+            <div class="text-l">
+                <span class="">Create comparison session for</span>
+                <span class="weight-medium">{{ dataset.name }}</span>
+            </div>
+            <form class="form" method="POST">
+                <div class="form-section">
+                    <div class="form-group form-group-md">
+                        {{ form_components.label_and_errors(form.session_name) }}
+                        {{ form.session_name(class_='form-field form-input text-m') }}
+                    </div>
+                    <div class="form-group form-group-lg">
+                        {{ form_components.label_and_errors(form.prompt) }}
+                        {{ form.prompt(class_='form-field form-input text-m') }}
+                    </div>
+                </div>
+                <div class="form-section">
+                    <div class="form-group form-group-md">
+                        {{ form_components.label_and_errors(form.comparison_list) }}
+                        {{ form.comparison_list(class_='form-select text-m') }}
+                    </div>
+                </div>
+                <div class="form-section form-section-border" id="comparison-list-field-container">
+                    <div class="form-group form-group-md">
+                        {{ form_components.label_and_errors(form.slice_type) }}
+                        {{ form.slice_type(class_='form-select text-m') }}
+                    </div>
+                    <div class="form-group form-group-md">
+                        {{ form_components.label_and_errors(form.image_count) }}
+                        {{ form.image_count(class_='form-input text-m', value=total_image_count, placeholder=total_image_count) }}
+                    </div>
+                    <div class="form-group form-group-md">
+                        {{ form_components.label_and_errors(form.slice_count) }}
+                        {{ form.slice_count(class_='form-input text-m') }}
+                    </div>
+                    <div class="form-group form-group-md">
+                        {{ form_components.label_and_errors(form.comparison_count) }}
+                        {{ form.comparison_count(class_='form-input text-m') }}
+                    </div>
+                    <div class="form-line form-group-md">
+                        <div class="form-group form-group-flex">
+                            {{ form_components.label_and_errors(form.min_slice_percent) }}
+                            {{ form.min_slice_percent(class_='form-input text-m') }}
+                        </div>
+                        <div class="form-group form-group-flex">
+                            {{ form_components.label_and_errors(form.max_slice_percent) }}
+                            {{ form.max_slice_percent(class_='form-input text-m') }}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section form-section-submit">
+                    {{ form.submit_button(class_='text-m submit-button') }}
+                </div>
+            </form>
+        </div>
     </div>
     <script>
         const sessionNameInput = document.getElementById('session_name');
-        sessionNameInput.value = '{{ 'Session ' + (label_session_count + 1)|string }}'
+        sessionNameInput.value = '{{ 'Comparison Session ' + (label_session_count + 1)|string }}'
         sessionNameInput.focus();
         sessionNameInput.select();
-
+    </script>
+    <script>
         const comparisonSelect = document.getElementById('comparison_list')
-        const optionalFields = [
-            document.getElementById('slice_type'),
-            document.getElementById('image_count'),
-            document.getElementById('slice_count'),
-            document.getElementById('comparison_count'),
-            document.getElementById('min_slice_percent'),
-            document.getElementById('max_slice_percent')
-        ];
+        const comparisonListContainer = document.getElementById('comparison-list-field-container');
+
         function updateFields() {
-            for (const field of optionalFields) {
-                if (comparisonSelect.value === 'create') {
-                    field.classList.remove('disabled');
-                }
-                else {
-                    field.classList.add('disabled');
-                }
-                console.log(field, comparisonSelect.value);
-            }
+            comparisonListContainer.classList.toggle('hidden', comparisonSelect.value !== 'create')
         }
+
         comparisonSelect.addEventListener('change', ev => {
             updateFields();
         });
+
         updateFields();
     </script>
 {% endblock %}
