@@ -65,7 +65,7 @@ async function setLabel(labelValue) {
     console.log('Label succeeded');
 
     for (const buttonEl of labelButtons) {
-        if (buttonEl.textContent === labelValue) {
+        if (buttonEl.dataset.labelValue === labelValue) {
             buttonEl.classList.add('selected');
         }
         else {
@@ -104,6 +104,6 @@ document.addEventListener('keydown', ev => {
 
 for (const buttonEl of labelButtons) {
     buttonEl.addEventListener('click', ev => {
-        setLabel(buttonEl.textContent)
+        setLabel(buttonEl.dataset.labelValue)
     })
 }
