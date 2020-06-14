@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{% endblock %}
+{% block title %}{{ label_session.session_name }}: Session Overview{% endblock %}
 {% block body %}
     <div class="main-container-1200">
         <a href="{{ url_for('dataset_overview', dataset_name=dataset.name) }}" class="text-m text-link text-orange">Back to {{ dataset.name }}</a>

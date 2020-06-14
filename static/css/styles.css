@@ -57,6 +57,11 @@ body {
     color: var(--text-c1);
 }
 
+.text-ml {
+    font-size: 24px;
+    color: var(--text-c1);
+}
+
 .text-l {
     font-size: 30px;
     color: var(--text-c1);
@@ -93,6 +98,10 @@ body {
 
 .text-light-gray {
     color: var(--text-c2);
+}
+
+.text-white {
+    color: var(--text-c1);
 }
 
 .text-gray {
@@ -211,6 +220,11 @@ body {
 
 .datasets-dataset {
     margin: 0 auto 20px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .datasets-dataset-info {

@@ -17,6 +17,9 @@ db.init_app(application)
 if not os.path.exists('db'):
     os.mkdir('db')
 
+if not os.path.exists(backend.DATASETS_PATH):
+    os.makedirs(backend.DATASETS_PATH, exist_ok=True)
+
 with application.app_context():
     db.create_all()
 
@@ -70,7 +73,8 @@ def export_labels(session_id: int):
 
 @application.route('/datasets')
 def dataset_list():
-    datasets = [(d, backend.get_images(d)) for d in backend.get_datasets()]
+    datasets = [(d, backend.get_images(d), backend.get_dataset_label_sessions(db.session, d))
+                for d in backend.get_datasets()]
     return render_template('dataset_list.html',
                            datasets=datasets)
 
