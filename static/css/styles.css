@@ -598,6 +598,43 @@ h1, h2, h3, h4, h5, h6 {
     background-color: var(--color-dark-orange);
 }
 
+.cat-slice-title {
+    margin-left: 20px;
+    margin-top: 5px;
+}
+
+.cat-session-link {
+    margin-right: 15px;
+}
+
+.cat-slice-header {
+    margin: 0 20px 10px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cat-slice-label-container {
+    margin: 0 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.cat-slice-label-controls {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.cat-slice-img {
+    height: 80vh;
+}
+
 
 .compare-title {
     margin-left: 20px;

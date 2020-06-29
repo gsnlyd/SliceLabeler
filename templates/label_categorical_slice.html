@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}{% endblock %}
+{% block body %}
+    <div class="main-container-full">
+        <div class="cat-slice-title text-l">
+            <a href="{{ url_for('session_overview', session_id=label_session.id) }}" class="cat-session-link text-link text-m text-orange">Back to {{ label_session.session_name }}</a>
+            <span>{{ prompt }}</span>
+        </div>
+        <div class="cat-slice-header">
+            <div>
+                <a class="link-button text-s" href="{{ url_for('label_categorical_slice', label_session=label_session.id, i=previous_index) }}" id="previous-link">Prev</a>
+            </div>
+            <div>
+                <a class="link-button text-s" href="{{ url_for('label_categorical_slice', label_session=label_session.id, i=next_index) }}" id="next-link">Next</a>
+            </div>
+        </div>
+        <div class="cat-slice-label-container">
+            <div class="cat-slice-controls">
+                <div>
+                    <label for="intensity-min" class="text-xs text-gray viewer-input-label">Min</label>
+                    <input id="intensity-min" type="number" class="text-m viewer-number-input" size="5" value="0">
+                </div>
+                <div>
+                    <label for="intensity-max" class="text-xs text-gray viewer-input-label">Max</label>
+                    <input id="intensity-max" type="number" class="text-m viewer-number-input" value="{{ image_max }}">
+                </div>
+            </div>
+            <div class="cat-slice-slice">
+                <img class="cat-slice-img" id="slice-img">
+            </div>
+            <div class="cat-slice-label-controls">
+            {% for lv in label_session.label_values() %}
+                {% set selected = (lv == slice_label_value) %}
+                <button class="viewer-label-button text-m {% if selected %}selected{% endif %}" data-label-value="{{ lv }}">{{ lv }} ({{ loop.index }})</button>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script>
+        const labelSessionId = {{ label_session.id }};
+        const datasetName = '{{ dataset.name }}';
+        const imageSliceIndex = {{ image_slice_index }};
+        const imageName = '{{ image_slice.image_name }}';
+        const sliceIndex = {{ image_slice.slice_index }};
+        const sliceType = '{{ image_slice.slice_type.name }}';
+        {% if slice_label_value is none %}
+        const initialLabel = null;
+        {% else %}
+        const initialLabel = '{{ slice_label_value }}';
+        {% endif %} 
+    </script>
+    <script type="text/javascript" src="/static/js/categorical_slice.js"></script>
+{% endblock %}

@@ -24,7 +24,7 @@
                         <td class="align-center">{{ slices[loop.index0].image_name }}</td>
                         <td class="align-center">{{ slices[loop.index0].slice_index }}</td>
                         <td class="align-center">{{ slices[loop.index0].slice_type.name.capitalize() }}</td>
-                        <td class="align-center"><a href="{{ url_for('label', label_session=label_session.id, i=loop.index0) }}" class="text-gray text-link">{{ sl_labels[0].label_value if sl_labels|length > 0 else 'Unlabeled' }}</a></td>
+                        <td class="align-center"><a href="{{ url_for('label_categorical_slice', label_session=label_session.id, i=loop.index0) }}" class="text-gray text-link">{{ sl_labels[0].label_value if sl_labels|length > 0 else 'Unlabeled' }}</a></td>
                     </tr>
                 {% endfor %}
             </tbody>
