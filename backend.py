@@ -451,7 +451,7 @@ def export_labels(session: Session, label_session: LabelSession):
     """Exports all labels for the given label_session to a StringIO in csv format."""
     rows = []
 
-    if label_session.session_type == 'categorical':
+    if label_session.session_type == LabelSessionType.CATEGORICAL_VOLUME.value:
         dataset = get_dataset(label_session.dataset)
         assert dataset is not None
 
@@ -467,7 +467,22 @@ def export_labels(session: Session, label_session: LabelSession):
                     str(la.date_labeled),
                     la.interaction_ms
                 ))
-    else:  # Comparison
+    elif label_session.session_type == LabelSessionType.CATEGORICAL_SLICE.value:
+        slices = get_comparison_slices(label_session.comparison_list_name)
+        labels = get_slice_labels(session, label_session.id, slices, descending=False)
+        header = ('slice', 'image_name', 'slice_index', 'slice_type', 'label_value', 'date_labeled', 'interaction_ms')
+        for image_slice_i, (sl, sl_labels) in enumerate(zip(slices, labels)):
+            for la in sl_labels:
+                rows.append((
+                    image_slice_i,
+                    sl.image_name,
+                    sl.slice_index,
+                    sl.slice_type.name,
+                    la.label_value,
+                    str(la.date_labeled),
+                    la.interaction_ms
+                ))
+    else:  # COMPARISON_SLICE
         comparison_list = load_comparison_list(label_session.comparison_list_name)
         labels = get_session_labels_comparison(session, label_session.id, comparison_list, descending=False)
 
