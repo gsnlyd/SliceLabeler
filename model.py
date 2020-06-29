@@ -22,6 +22,8 @@ class LabelSession(db.Model):
 
     categorical_labels: 'List[ImageLabel]' = db.relationship('ImageLabel', back_populates='session',
                                                              order_by='ImageLabel.id')
+    categorical_slice_labels: 'List[ImageLabel]' = db.relationship('SliceLabel', back_populates='session',
+                                                                   order_by='SliceLabel.id')
     comparison_labels: 'List[ComparisonLabel]' = db.relationship('ComparisonLabel', back_populates='session',
                                                                  order_by='ComparisonLabel.id')
 
@@ -45,6 +47,24 @@ class ImageLabel(db.Model):
     interaction_ms = db.Column(db.Integer, nullable=False)
 
     session = db.relationship(LabelSession, back_populates='categorical_labels')
+
+
+class SliceLabel(db.Model):
+    __tablename__ = 'slice_labels'
+
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.Integer, db.ForeignKey('label_sessions.id'), nullable=False)
+
+    image_slice_index = db.Column(db.Integer, nullable=False)
+    image_name = db.Column(db.String(100), nullable=False)
+    slice_index = db.Column(db.Integer, nullable=False)
+    slice_type = db.Column(db.String(50), nullable=False)
+
+    date_labeled = db.Column(db.DateTime, nullable=False)
+    label_value = db.Column(db.String(100), nullable=False)
+    interaction_ms = db.Column(db.Integer, nullable=False)
+
+    session = db.relationship(LabelSession, back_populates='categorical_slice_labels')
 
 
 class ComparisonLabel(db.Model):

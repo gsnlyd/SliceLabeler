@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image
 from sqlalchemy.orm import Session
 
-from model import ImageLabel, LabelSession, ComparisonLabel
+from model import ImageLabel, LabelSession, ComparisonLabel, SliceLabel
 
 DATASETS_PATH = 'data/datasets'
 SLICES_PATH = 'static/slices'
@@ -222,7 +222,7 @@ def get_comparison_lists(dataset: Dataset) -> List[str]:
     return sorted([n for n in os.listdir(COMPARISON_LISTS_PATH) if is_comparison_list(n)])
 
 
-comparison_list_cache: Dict[str, ComparisonList] = {}
+comparison_list_cache: Dict[str, Tuple[ComparisonList, List[ComparisonSlice]]] = {}
 
 
 def load_comparison_list(name: str) -> ComparisonList:
@@ -233,7 +233,7 @@ def load_comparison_list(name: str) -> ComparisonList:
     :return: A list of tuples containing each ComparisonSlice.
     """
     if name in comparison_list_cache:
-        return comparison_list_cache[name]
+        return comparison_list_cache[name][0]
 
     comparisons: ComparisonList = []
 
@@ -252,7 +252,15 @@ def load_comparison_list(name: str) -> ComparisonList:
                 ComparisonSlice(row[3], int(row[4]), type_2)
             ))
 
-    comparison_list_cache[name] = comparisons
+    slices = []
+    for co in comparisons:
+        slices.append(co[0])
+        slices.append(co[1])
+
+    # Remove duplicate slices and sort
+    slices = sorted(set(slices), key=lambda v: v.image_name + str(v.slice_index) + v.slice_type.name)
+
+    comparison_list_cache[name] = (comparisons, slices)
     while len(comparison_list_cache) > COMPARISON_LIST_CACHE_SIZE:
         comparison_list_cache.pop(list(comparison_list_cache.keys())[0])
 
@@ -260,7 +268,10 @@ def load_comparison_list(name: str) -> ComparisonList:
 
 
 def get_comparison_slices(comparison_list_name: str) -> List[ComparisonSlice]:
-    pass
+    if comparison_list_name not in comparison_list_cache:
+        load_comparison_list(comparison_list_name)  # Cache slices
+
+    return comparison_list_cache[comparison_list_name][1]
 
 
 class LabelSessionType(Enum):
@@ -341,6 +352,43 @@ def get_session_labels_categorical(session: Session, label_session_id: int,
         labels_per_image[im_label.image_name].append(im_label)
 
     return labels_per_image
+
+
+def set_slice_label(session: Session, label_session: LabelSession, image_slice_index: int, image_slice: ComparisonSlice,
+                    label_value: str, interaction_ms: int):
+    assert label_value in label_session.label_values()
+    label = SliceLabel(session_id=label_session.id,
+                       image_slice_index=image_slice_index,
+                       image_name=image_slice.image_name,
+                       slice_index=image_slice.slice_index,
+                       slice_type=image_slice.slice_type.name,
+                       date_labeled=datetime.now(),
+                       label_value=label_value,
+                       interaction_ms=interaction_ms)
+    session.add(label)
+    session.commit()
+
+
+def get_current_slice_label_value(session: Session, label_session_id: int, image_slice_index: int) -> Optional[str]:
+    label: SliceLabel = session.query(SliceLabel) \
+        .filter(SliceLabel.session_id == label_session_id) \
+        .filter(SliceLabel.image_slice_index == image_slice_index) \
+        .order_by(SliceLabel.date_labeled.desc()) \
+        .limit(1).one_or_none()
+    return None if label is None else label.label_value
+
+
+def get_slice_labels(session: Session, label_session_id: int, slices: List[ComparisonSlice],
+                     descending: bool = True) -> List[List[SliceLabel]]:
+    order = SliceLabel.date_labeled.desc() if descending else SliceLabel.date_labeled
+    all_labels: List[SliceLabel] = session.query(SliceLabel).filter(SliceLabel.session_id == label_session_id) \
+        .order_by(order).all()
+
+    labels_per_slice = [[] for _ in range(len(slices))]
+    for sl_label in all_labels:
+        labels_per_slice[sl_label.image_slice_index].append(sl_label)
+
+    return labels_per_slice
 
 
 COMPARISON_LABEL_VALUES = [

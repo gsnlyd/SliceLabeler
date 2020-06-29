@@ -110,23 +110,7 @@ def dataset_overview(dataset_name: str):
 def session_overview(session_id: int):
     label_session = backend.get_label_session_by_id(db.session, session_id)
     dataset = backend.get_dataset(label_session.dataset)
-    if label_session.session_type == 'comparison':
-        comparison_list = backend.load_comparison_list(label_session.comparison_list_name)
-        session_labels = backend.get_session_labels_comparison(db.session, label_session.id, comparison_list)
-
-        resume_point = None
-        for co_index, co_labels in enumerate(session_labels):
-            if len(co_labels) == 0:
-                resume_point = co_index
-                break
-
-        return render_template('session_overview_comparison.html',
-                               label_session=label_session,
-                               dataset=dataset,
-                               comparison_list=comparison_list,
-                               session_labels=session_labels,
-                               resume_point=resume_point)
-    else:
+    if label_session.session_type == LabelSessionType.CATEGORICAL_VOLUME.value:
         images = backend.get_images(dataset)
         session_labels = backend.get_session_labels_categorical(db.session, label_session.id, images)
 
@@ -140,6 +124,38 @@ def session_overview(session_id: int):
                                label_session=label_session,
                                dataset=dataset,
                                images=images,
+                               session_labels=session_labels,
+                               resume_point=resume_point)
+    elif label_session.session_type == LabelSessionType.CATEGORICAL_SLICE.value:
+        slices = backend.get_comparison_slices(label_session.comparison_list_name)
+        slice_labels = backend.get_slice_labels(db.session, label_session.id, slices)
+
+        resume_point = None
+        for sl_index, sl_labels in enumerate(slice_labels):
+            if len(sl_labels) == 0:
+                resume_point = sl_index
+                break
+
+        return render_template('session_overview_categorical_slice.html',
+                               label_session=label_session,
+                               dataset=dataset,
+                               slices=slices,
+                               slice_labels=slice_labels,
+                               resume_point=resume_point)
+    else:  # COMPARISON_SLICE
+        comparison_list = backend.load_comparison_list(label_session.comparison_list_name)
+        session_labels = backend.get_session_labels_comparison(db.session, label_session.id, comparison_list)
+
+        resume_point = None
+        for co_index, co_labels in enumerate(session_labels):
+            if len(co_labels) == 0:
+                resume_point = co_index
+                break
+
+        return render_template('session_overview_comparison.html',
+                               label_session=label_session,
+                               dataset=dataset,
+                               comparison_list=comparison_list,
                                session_labels=session_labels,
                                resume_point=resume_point)
 
