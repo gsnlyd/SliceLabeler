@@ -18,6 +18,20 @@ class CreateCategoricalSessionForm(FlaskForm):
     submit_button = SubmitField('Create')
 
 
+class CreateCategoricalSliceSessionForm(FlaskForm):
+    session_name = StringField('Session Name',
+                               validators=[Length(3, 100, LENGTH_MESSAGE)],
+                               render_kw={'placeholder': 'My Session'})
+    prompt = StringField('Label Prompt',
+                         validators=[Length(0, 100, LENGTH_MESSAGE)],
+                         render_kw={'placeholder': 'What do you think of this image?'})
+    label_values = StringField('Label Options',
+                               validators=[Length(1, 100, LENGTH_MESSAGE)],
+                               render_kw={'placeholder': 'Amazing, Unremarkable, Boring'})
+    comparison_list = SelectField('Comparison List', choices=[])
+    submit_button = SubmitField('Create')
+
+
 class ComparisonNumberRange(NumberRange):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

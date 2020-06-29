@@ -18,6 +18,18 @@
                 <div class="text-m text-gray">No Sessions</div>
             {% endif %}
             <div class="dataset-sessions-header">
+                <div class="text-l">Categorical Slice Sessions</div>
+            </div>
+            {% if categorical_sessions|length > 0 %}
+                {% for label_session in categorical_slice_sessions %}
+                    <div>
+                        <a href="{{ url_for('session_overview', session_id=label_session.id) }}" class="text-m text-link text-orange">{{ label_session.session_name }}</a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-m text-gray">No Sessions</div>
+            {% endif %}
+            <div class="dataset-sessions-header">
                 <div class="text-l">Comparison Sessions</div>
             </div>
             {% if comparison_sessions|length > 0 %}
@@ -30,7 +42,8 @@
                 <div class="text-m text-gray">No Sessions</div>
             {% endif %}
             <div class="dataset-sessions-create">
-                <a href="{{ url_for('create_categorical_session', dataset_name=dataset.name) }}" class="dataset-sessions-create-button text-m link-button orange">New Categorical Session</a>
+                <a href="{{ url_for('create_categorical_session', dataset_name=dataset.name) }}" class="dataset-sessions-create-button text-m link-button orange">New Categorical Vol Session</a>
+                <a href="{{ url_for('create_categorical_slice_session', dataset_name=dataset.name) }}" class="dataset-sessions-create-button text-m link-button orange">New Categorical Slice Session</a>
                 <a href="{{ url_for('create_comparison_session', dataset_name=dataset.name) }}" class="dataset-sessions-create-button text-m link-button orange">New Comparison Session</a>
             </div>
         </div>

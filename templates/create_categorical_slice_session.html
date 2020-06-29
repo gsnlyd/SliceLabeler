@@ -5,7 +5,7 @@
     <div class="main-container-800 container-offset">
         <div class="card create-form-container">
             <div class="text-l">
-                <span class="">Create categorical session for</span>
+                <span class="">Create categorical slice session for</span>
                 <span class="weight-medium">{{ dataset.name }}</span>
             </div>
             <form class="form" method="POST">
@@ -25,6 +25,11 @@
                         {{ form.label_values(class_='form-field form-input text-m') }}
                     </div>
                 </div>
+                <div class="form-section">
+                    <div class="form-group form-group-md">
+                        {{ form_components.label_and_errors(form.comparison_list) }}
+                        {{ form.comparison_list(class_='form-select text-m') }}
+                    </div>
                 <div class="form-section form-section-submit">
                     {{ form.submit_button(class_='text-m submit-button') }}
                 </div>
@@ -33,7 +38,7 @@
     </div>
     <script>
         const sessionNameInput = document.getElementById('session_name');
-        sessionNameInput.value = '{{ 'Categorical Vol ' + (label_session_count + 1)|string }}'
+        sessionNameInput.value = '{{ 'Categorical Slice ' + (label_session_count + 1)|string }}'
         sessionNameInput.focus();
         sessionNameInput.select();
     </script>

@@ -5,7 +5,9 @@ from flask import Flask, redirect, url_for, render_template, abort, request, jso
 from wtforms.validators import NumberRange
 
 import backend
-from forms import CreateCategoricalSessionForm, CreateComparisonSessionForm, ComparisonNumberRange
+from backend import LabelSessionType
+from forms import CreateCategoricalSessionForm, CreateComparisonSessionForm, ComparisonNumberRange, \
+    CreateCategoricalSliceSessionForm
 from model import db
 
 application = Flask(__name__)
@@ -88,14 +90,19 @@ def dataset_overview(dataset_name: str):
     images = backend.get_images(dataset)
     label_sessions = backend.get_dataset_label_sessions(db.session, dataset)
 
-    categorical_sessions = list(filter(lambda se: se.session_type == 'categorical', label_sessions))
-    comparison_sessions = list(filter(lambda se: se.session_type == 'comparison', label_sessions))
+    categorical_sessions = list(filter(lambda se: se.session_type == LabelSessionType.CATEGORICAL_VOLUME.value,
+                                       label_sessions))
+    categorical_slice_sessions = list(filter(lambda se: se.session_type == LabelSessionType.CATEGORICAL_SLICE.value,
+                                             label_sessions))
+    comparison_sessions = list(filter(lambda se: se.session_type == LabelSessionType.COMPARISON_SLICE.value,
+                                      label_sessions))
 
     return render_template('dataset_overview.html',
                            dataset=dataset,
                            images=images,
                            label_sessions=label_sessions,
                            categorical_sessions=categorical_sessions,
+                           categorical_slice_sessions=categorical_slice_sessions,
                            comparison_sessions=comparison_sessions)
 
 
@@ -153,11 +160,44 @@ def create_categorical_session(dataset_name: str):
             form.session_name.errors.append('Session name already in use.')
         else:
             label_values = [v.strip() for v in form.label_values.data.split(',')]
-            backend.create_label_session(db.session, dataset, form.session_name.data, form.prompt.data,
+            backend.create_label_session(db.session, dataset, backend.LabelSessionType.CATEGORICAL_VOLUME,
+                                         form.session_name.data, form.prompt.data,
                                          label_values=label_values)
             return redirect(url_for('dataset_overview', dataset_name=dataset.name))
 
     return render_template('create_categorical_session.html',
+                           dataset=dataset,
+                           label_session_count=label_session_count,
+                           form=form)
+
+
+@application.route('/create-categorical-slice-session/<string:dataset_name>', methods=['GET', 'POST'])
+def create_categorical_slice_session(dataset_name: str):
+    dataset = backend.get_dataset(dataset_name)
+    if dataset is None:
+        abort(400)
+
+    current_sessions = backend.get_dataset_label_sessions(db.session, dataset)
+    label_session_count = len(current_sessions)
+
+    form = CreateCategoricalSliceSessionForm(meta={'csrf': False})
+    comparison_lists = backend.get_comparison_lists(dataset)
+    for li in comparison_lists:
+        form.comparison_list.choices.append((li, li))
+
+    if form.validate_on_submit():
+        if form.session_name.data in [se.session_name for se in current_sessions]:
+            form.session_name.errors.append('Session name already in use.')
+        else:
+            assert form.comparison_list.data in comparison_lists
+            label_values = [v.strip() for v in form.label_values.data.split(',')]
+            backend.create_label_session(db.session, dataset, backend.LabelSessionType.CATEGORICAL_SLICE,
+                                         form.session_name.data, form.prompt.data,
+                                         comparison_list_name=form.comparison_list.data,
+                                         label_values=label_values)
+            return redirect(url_for('dataset_overview', dataset_name=dataset.name))
+
+    return render_template('create_categorical_slice_session.html',
                            dataset=dataset,
                            label_session_count=label_session_count,
                            form=form)
@@ -199,7 +239,8 @@ def create_comparison_session(dataset_name: str):
             else:
                 comparison_list = form.comparison_list.data
                 assert comparison_list in comparison_lists
-            backend.create_label_session(db.session, dataset, form.session_name.data, form.prompt.data,
+            backend.create_label_session(db.session, dataset, backend.LabelSessionType.COMPARISON_SLICE,
+                                         form.session_name.data, form.prompt.data,
                                          comparison_list_name=comparison_list)
             return redirect(url_for('dataset_overview', dataset_name=dataset.name))
 

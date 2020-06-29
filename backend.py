@@ -259,18 +259,39 @@ def load_comparison_list(name: str) -> ComparisonList:
     return comparisons
 
 
-def create_label_session(session: Session, dataset: Dataset, label_session_name: str, prompt: str,
+def get_comparison_slices(comparison_list_name: str) -> List[ComparisonSlice]:
+    pass
+
+
+class LabelSessionType(Enum):
+    CATEGORICAL_VOLUME = 'categorical'
+    CATEGORICAL_SLICE = 'categorical_slice'
+    COMPARISON_SLICE = 'comparison'
+
+
+def create_label_session(session: Session, dataset: Dataset, session_type: LabelSessionType,
+                         label_session_name: str, prompt: str,
                          comparison_list_name: str = None, label_values: List[str] = None) -> LabelSession:
     assert comparison_list_name is None or comparison_list_name in get_comparison_lists(dataset)
-    assert (comparison_list_name is None and label_values is not None) or \
-           (comparison_list_name is not None and label_values is None)
+    if session_type == LabelSessionType.CATEGORICAL_VOLUME or session_type == LabelSessionType.CATEGORICAL_SLICE:
+        assert label_values is not None
+    if session_type == LabelSessionType.CATEGORICAL_SLICE or session_type == LabelSessionType.COMPARISON_SLICE:
+        assert comparison_list_name is not None
 
-    if comparison_list_name is None:
-        label_session = LabelSession(dataset=dataset.name, session_name=label_session_name, session_type='categorical',
+    if session_type == LabelSessionType.CATEGORICAL_VOLUME:
+        label_session = LabelSession(dataset=dataset.name, session_name=label_session_name,
+                                     session_type=session_type.value,
                                      prompt=prompt, date_created=datetime.now(),
                                      categorical_label_values=','.join(label_values))
-    else:
-        label_session = LabelSession(dataset=dataset.name, session_name=label_session_name, session_type='comparison',
+    elif session_type == LabelSessionType.CATEGORICAL_SLICE:
+        label_session = LabelSession(dataset=dataset.name, session_name=label_session_name,
+                                     session_type=session_type.value,
+                                     prompt=prompt, date_created=datetime.now(),
+                                     categorical_label_values=','.join(label_values),
+                                     comparison_list_name=comparison_list_name)
+    else:  # COMPARISON_SLICE
+        label_session = LabelSession(dataset=dataset.name, session_name=label_session_name,
+                                     session_type=session_type.value,
                                      prompt=prompt, date_created=datetime.now(),
                                      comparison_list_name=comparison_list_name)
 
