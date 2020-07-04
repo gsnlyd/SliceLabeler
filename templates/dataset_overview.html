@@ -20,7 +20,7 @@
             <div class="dataset-sessions-header">
                 <div class="text-l">Categorical Slice Sessions</div>
             </div>
-            {% if categorical_sessions|length > 0 %}
+            {% if categorical_slice_sessions|length > 0 %}
                 {% for label_session in categorical_slice_sessions %}
                     <div>
                         <a href="{{ url_for('session_overview', session_id=label_session.id) }}" class="text-m text-link text-orange">{{ label_session.session_name }}</a>

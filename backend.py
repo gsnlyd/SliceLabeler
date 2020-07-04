@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image
 from sqlalchemy.orm import Session
 
-from model import ImageLabel, LabelSession, ComparisonLabel, SliceLabel
+from model import LabelSession
 
 DATASETS_PATH = 'data/datasets'
 SLICES_PATH = 'static/slices'
@@ -40,6 +40,12 @@ class DataImage(NamedTuple):
     dataset: Dataset
     name: str
     path: str
+
+
+class ImageSlice(NamedTuple):
+    image_name: str
+    slice_index: int
+    slice_type: SliceType
 
 
 def get_datasets() -> List[Dataset]:
@@ -274,44 +280,6 @@ def get_comparison_slices(comparison_list_name: str) -> List[ComparisonSlice]:
     return comparison_list_cache[comparison_list_name][1]
 
 
-class LabelSessionType(Enum):
-    CATEGORICAL_VOLUME = 'categorical'
-    CATEGORICAL_SLICE = 'categorical_slice'
-    COMPARISON_SLICE = 'comparison'
-
-
-def create_label_session(session: Session, dataset: Dataset, session_type: LabelSessionType,
-                         label_session_name: str, prompt: str,
-                         comparison_list_name: str = None, label_values: List[str] = None) -> LabelSession:
-    assert comparison_list_name is None or comparison_list_name in get_comparison_lists(dataset)
-    if session_type == LabelSessionType.CATEGORICAL_VOLUME or session_type == LabelSessionType.CATEGORICAL_SLICE:
-        assert label_values is not None
-    if session_type == LabelSessionType.CATEGORICAL_SLICE or session_type == LabelSessionType.COMPARISON_SLICE:
-        assert comparison_list_name is not None
-
-    if session_type == LabelSessionType.CATEGORICAL_VOLUME:
-        label_session = LabelSession(dataset=dataset.name, session_name=label_session_name,
-                                     session_type=session_type.value,
-                                     prompt=prompt, date_created=datetime.now(),
-                                     categorical_label_values=','.join(label_values))
-    elif session_type == LabelSessionType.CATEGORICAL_SLICE:
-        label_session = LabelSession(dataset=dataset.name, session_name=label_session_name,
-                                     session_type=session_type.value,
-                                     prompt=prompt, date_created=datetime.now(),
-                                     categorical_label_values=','.join(label_values),
-                                     comparison_list_name=comparison_list_name)
-    else:  # COMPARISON_SLICE
-        label_session = LabelSession(dataset=dataset.name, session_name=label_session_name,
-                                     session_type=session_type.value,
-                                     prompt=prompt, date_created=datetime.now(),
-                                     comparison_list_name=comparison_list_name)
-
-    session.add(label_session)
-    session.commit()
-
-    return label_session
-
-
 def get_label_session_by_id(session: Session, label_session_id: int) -> Optional[LabelSession]:
     return session.query(LabelSession).filter(LabelSession.id == label_session_id).one_or_none()
 
@@ -321,130 +289,12 @@ def get_dataset_label_sessions(session: Session, dataset: Dataset) -> List[Label
         .order_by(LabelSession.date_created).all()
 
 
-def set_categorical_label(session: Session, label_session: LabelSession, image: DataImage,
-                          label_value: str, interaction_ms: int):
-    assert label_value in label_session.label_values()
-    label = ImageLabel(session_id=label_session.id, image_name=image.name, date_labeled=datetime.now(),
-                       label_value=label_value, interaction_ms=interaction_ms)
-    session.add(label)
-    session.commit()
-
-
-def get_current_categorical_label_value(session: Session, label_session_id: int, image: DataImage) -> Optional[str]:
-    label: ImageLabel = session.query(ImageLabel) \
-        .filter(ImageLabel.session_id == label_session_id) \
-        .filter(ImageLabel.image_name == image.name) \
-        .order_by(ImageLabel.date_labeled.desc()) \
-        .limit(1) \
-        .one_or_none()
-    return None if label is None else label.label_value
-
-
-def get_session_labels_categorical(session: Session, label_session_id: int,
-                                   images: List[DataImage], descending: bool = True) -> Dict[str, List[ImageLabel]]:
-    """Gets categorical labels for each image sorted by date labeled."""
-    order = ImageLabel.date_labeled.desc() if descending else ImageLabel.date_labeled
-    all_labels: List[ImageLabel] = session.query(ImageLabel).filter(ImageLabel.session_id == label_session_id) \
-        .order_by(order).all()
-
-    labels_per_image: Dict[str, List[ImageLabel]] = {im.name: [] for im in images}
-    for im_label in all_labels:
-        labels_per_image[im_label.image_name].append(im_label)
-
-    return labels_per_image
-
-
-def set_slice_label(session: Session, label_session: LabelSession, image_slice_index: int, image_slice: ComparisonSlice,
-                    label_value: str, interaction_ms: int):
-    assert label_value in label_session.label_values()
-    label = SliceLabel(session_id=label_session.id,
-                       image_slice_index=image_slice_index,
-                       image_name=image_slice.image_name,
-                       slice_index=image_slice.slice_index,
-                       slice_type=image_slice.slice_type.name,
-                       date_labeled=datetime.now(),
-                       label_value=label_value,
-                       interaction_ms=interaction_ms)
-    session.add(label)
-    session.commit()
-
-
-def get_current_slice_label_value(session: Session, label_session_id: int, image_slice_index: int) -> Optional[str]:
-    label: SliceLabel = session.query(SliceLabel) \
-        .filter(SliceLabel.session_id == label_session_id) \
-        .filter(SliceLabel.image_slice_index == image_slice_index) \
-        .order_by(SliceLabel.date_labeled.desc()) \
-        .limit(1).one_or_none()
-    return None if label is None else label.label_value
-
-
-def get_slice_labels(session: Session, label_session_id: int, slices: List[ComparisonSlice],
-                     descending: bool = True) -> List[List[SliceLabel]]:
-    order = SliceLabel.date_labeled.desc() if descending else SliceLabel.date_labeled
-    all_labels: List[SliceLabel] = session.query(SliceLabel).filter(SliceLabel.session_id == label_session_id) \
-        .order_by(order).all()
-
-    labels_per_slice = [[] for _ in range(len(slices))]
-    for sl_label in all_labels:
-        labels_per_slice[sl_label.image_slice_index].append(sl_label)
-
-    return labels_per_slice
-
-
 COMPARISON_LABEL_VALUES = [
     'First',
     'Second',
     'Neither',
     'Not Sure'
 ]
-
-
-def set_comparison_label(session: Session, label_session: LabelSession, comparison_index: int,
-                         label_value: str, time_taken_ms: int):
-    assert label_value in COMPARISON_LABEL_VALUES
-    comparisons = load_comparison_list(label_session.comparison_list_name)
-    slice_1, slice_2 = comparisons[comparison_index]
-
-    comparison_label = ComparisonLabel(
-        session_id=label_session.id,
-        comparison_index=comparison_index,
-        image_1_name=slice_1.image_name,
-        slice_1_index=slice_1.slice_index,
-        slice_1_type=slice_1.slice_type.name,
-        image_2_name=slice_2.image_name,
-        slice_2_index=slice_2.slice_index,
-        slice_2_type=slice_2.slice_type.name,
-        label_value=label_value,
-        date_labeled=datetime.now(),
-        time_taken_ms=time_taken_ms
-    )
-
-    session.add(comparison_label)
-    session.commit()
-
-
-def get_current_comparison_label_value(session: Session, label_session_id: int, comparison_index: int) -> str:
-    comparison_label: Optional[ComparisonLabel] = session.query(ComparisonLabel) \
-        .filter(ComparisonLabel.session_id == label_session_id) \
-        .filter(ComparisonLabel.comparison_index == comparison_index) \
-        .order_by(ComparisonLabel.date_labeled.desc()) \
-        .limit(1) \
-        .one_or_none()
-    return None if comparison_label is None else comparison_label.label_value
-
-
-def get_session_labels_comparison(session: Session, label_session_id: int, comparison_list: ComparisonList,
-                                  descending: bool = True) -> List[List[ComparisonLabel]]:
-    """Gets comparison labels for each comparison sorted by date labeled."""
-    order = ComparisonLabel.date_labeled.desc() if descending else ComparisonLabel.date_labeled
-    comparison_labels: List[ComparisonLabel] = session.query(ComparisonLabel) \
-        .filter(ComparisonLabel.session_id == label_session_id).order_by(order).all()
-
-    labels_per_comparison: List[List[ComparisonLabel]] = [[] for _ in range(len(comparison_list))]
-    for co_label in comparison_labels:
-        labels_per_comparison[co_label.comparison_index].append(co_label)
-
-    return labels_per_comparison
 
 
 def export_labels(session: Session, label_session: LabelSession):
