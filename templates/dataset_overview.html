@@ -5,46 +5,26 @@
         <a href="{{ url_for('dataset_list') }}" class="text-m text-link text-orange">Back to Datasets</a>
         <div class="text-header">{{ dataset.name }}</div>
         <div class="dataset-sessions card">
-            <div class="dataset-sessions-header">
-                <div class="text-l">Categorical Sessions</div>
-            </div>
-            {% if categorical_sessions|length > 0 %}
-                {% for label_session in categorical_sessions %}
-                    <div>
-                        <a href="{{ url_for('session_overview', session_id=label_session.id) }}" class="text-m text-link text-orange">{{ label_session.session_name }}</a>
-                    </div>
+            <div class="text-l">Sessions</div>
+            <br>
+            <div>
+            {% set session_names = ['Image (Categorical)', 'Slice (Categorical)', 'Slice (Comparison)'] %}
+            {% set create_routes = ['create_categorical_session', 'create_categorical_slice_session', 'create_comparison_session'] %}
+            {% for sess_type, sessions in label_sessions.items() %}
+                <div class="dataset-sessions-header">
+                    <span class="text-m weight-medium">{{ session_names[loop.index0] }}</span>
+                    <a href="{{ url_for(create_routes[loop.index0], dataset_name=dataset.name) }}" class="dataset-sessions-create-button text-xs weight-medium link-button orange">New</a>
+                </div>
+                <div class="dataset-sessions-list">
+                {% if sessions|length == 0 %}
+                    <div class="text-m text-gray">No sessions.</div>
+                {% endif %}
+                {% for sess in sessions %}
+                    <a href="{{ url_for('session_overview', session_id=sess.id) }}" class="text-m text-link text-orange">{{ sess.session_name }}</a>
+                    <br>
                 {% endfor %}
-            {% else %}
-                <div class="text-m text-gray">No Sessions</div>
-            {% endif %}
-            <div class="dataset-sessions-header">
-                <div class="text-l">Categorical Slice Sessions</div>
-            </div>
-            {% if categorical_slice_sessions|length > 0 %}
-                {% for label_session in categorical_slice_sessions %}
-                    <div>
-                        <a href="{{ url_for('session_overview', session_id=label_session.id) }}" class="text-m text-link text-orange">{{ label_session.session_name }}</a>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div class="text-m text-gray">No Sessions</div>
-            {% endif %}
-            <div class="dataset-sessions-header">
-                <div class="text-l">Comparison Sessions</div>
-            </div>
-            {% if comparison_sessions|length > 0 %}
-                {% for label_session in comparison_sessions %}
-                    <div>
-                        <a href="{{ url_for('session_overview', session_id=label_session.id) }}" class="text-m text-link text-orange">{{ label_session.session_name }}</a>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div class="text-m text-gray">No Sessions</div>
-            {% endif %}
-            <div class="dataset-sessions-create">
-                <a href="{{ url_for('create_categorical_session', dataset_name=dataset.name) }}" class="dataset-sessions-create-button text-m link-button orange">New Categorical Vol Session</a>
-                <a href="{{ url_for('create_categorical_slice_session', dataset_name=dataset.name) }}" class="dataset-sessions-create-button text-m link-button orange">New Categorical Slice Session</a>
-                <a href="{{ url_for('create_comparison_session', dataset_name=dataset.name) }}" class="dataset-sessions-create-button text-m link-button orange">New Comparison Session</a>
+                </div>
+            {% endfor %}
             </div>
         </div>
     </div>

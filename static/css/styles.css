@@ -37,6 +37,9 @@ h1, h2, h3, h4, h5, h6 {
 
 
 
+.weight-thin {
+    font-weight: 200;
+}
 .weight-normal {
     font-weight: normal;
 }
@@ -93,11 +96,9 @@ h1, h2, h3, h4, h5, h6 {
     text-decoration: none;
     display: inline-block;
 }
-.text-link:hover {
+.text-link:hover, .text-link:active {
     filter: brightness(0.8);
-}
-.text-link:active {
-    transform: scale(0.95);
+    text-decoration: underline;
 }
 .text-link.hover-underline:hover, .text-link.text-gray:hover {
     text-decoration: underline;
@@ -155,12 +156,17 @@ h1, h2, h3, h4, h5, h6 {
 .link-button:active {
     transform: scale(0.95);
 }
+
+.link-button.text-xs {
+    padding: 3px 8px;
+}
 .link-button.text-s {
     padding: 5px 10px;
 }
 .link-button.text-m, .link-button.text-l {
     padding: 10px 15px;
 }
+
 .link-button.orange {
     background-color: var(--color-dark-orange);
     color: var(--text-c1);
@@ -241,14 +247,19 @@ h1, h2, h3, h4, h5, h6 {
 
 
 .dataset-sessions {
+    margin-top: 5px;
     margin-bottom: 20px;
 }
 
 .dataset-sessions-header {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
-.dataset-sessions-header:not(:first-of-type) {
-    margin-top: 20px;
+
+.dataset-sessions-list {
+    margin-bottom: 50px;
+}
+.dataset-sessions-list:last-of-type {
+    margin-bottom: 30px;
 }
 
 .dataset-sessions-create {

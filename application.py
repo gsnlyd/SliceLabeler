@@ -1,5 +1,6 @@
 import os
 from io import BytesIO
+from typing import Dict, List
 
 from flask import Flask, redirect, url_for, render_template, abort, request, jsonify, send_file
 from wtforms.validators import NumberRange
@@ -11,7 +12,7 @@ import sessions
 from sessions import LabelSessionType
 from forms import CreateCategoricalSessionForm, CreateComparisonSessionForm, ComparisonNumberRange, \
     CreateCategoricalSliceSessionForm
-from model import db
+from model import db, LabelSession
 
 application = Flask(__name__)
 
@@ -93,20 +94,14 @@ def dataset_overview(dataset_name: str):
     images = backend.get_images(dataset)
     label_sessions = backend.get_dataset_label_sessions(db.session, dataset)
 
-    categorical_sessions = list(filter(lambda se: se.session_type == LabelSessionType.CATEGORICAL_IMAGE.name,
-                                       label_sessions))
-    categorical_slice_sessions = list(filter(lambda se: se.session_type == LabelSessionType.CATEGORICAL_SLICE.name,
-                                             label_sessions))
-    comparison_sessions = list(filter(lambda se: se.session_type == LabelSessionType.COMPARISON_SLICE.name,
-                                      label_sessions))
+    sessions_by_type: Dict[LabelSessionType, List[LabelSession]] = {st: [] for st in LabelSessionType}
+    for sess in label_sessions:
+        sessions_by_type[LabelSessionType[sess.session_type]].append(sess)
 
     return render_template('dataset_overview.html',
                            dataset=dataset,
                            images=images,
-                           label_sessions=label_sessions,
-                           categorical_sessions=categorical_sessions,
-                           categorical_slice_sessions=categorical_slice_sessions,
-                           comparison_sessions=comparison_sessions)
+                           label_sessions=sessions_by_type)
 
 
 @application.route('/session/<int:session_id>')
