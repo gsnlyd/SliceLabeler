@@ -28,7 +28,7 @@ class CreateCategoricalSliceSessionForm(FlaskForm):
     label_values = StringField('Label Options',
                                validators=[Length(1, 100, LENGTH_MESSAGE)],
                                render_kw={'placeholder': 'Amazing, Unremarkable, Boring'})
-    comparison_list = SelectField('Comparison List', choices=[])
+    comparisons = SelectField('Use Slices From', choices=[])
     submit_button = SubmitField('Create')
 
 
@@ -37,8 +37,8 @@ class ComparisonNumberRange(NumberRange):
         super().__init__(*args, **kwargs)
 
     def __call__(self, form, field):
-        # Only validate comparison list fields if a comparison list is actually being created
-        if form.comparison_list.data == 'create':
+        # Only validate comparison fields if new comparisons are being generated
+        if form.comparisons.data == 'create':
             super().__call__(form, field)
 
 
@@ -49,7 +49,7 @@ class CreateComparisonSessionForm(FlaskForm):
     prompt = StringField('Label Prompt',
                          validators=[Length(0, 100, LENGTH_MESSAGE)],
                          render_kw={'placeholder': 'Which image is your favorite?'})
-    comparison_list = SelectField('Comparison List', choices=[('create', 'Create New')])
+    comparisons = SelectField('Comparisons', choices=[('create', 'Create New')])
     slice_type = SelectField('Orientation', choices=[('SAGITTAL', 'Sagittal'),
                                                      ('CORONAL', 'Coronal'),
                                                      ('AXIAL', 'Axial')])

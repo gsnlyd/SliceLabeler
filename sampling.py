@@ -5,6 +5,26 @@ import nibabel
 
 import backend
 from backend import Dataset, DataImage, ImageSlice, SliceType
+from model import LabelSession
+
+
+def get_slices_from_session(label_session: LabelSession) -> List[ImageSlice]:
+    comparisons = get_comparisons_from_session(label_session)
+    slices = [co[0] for co in comparisons] + [co[1] for co in comparisons]
+    slices = set(slices)
+    slices = sorted(slices, key=lambda sl: sl.image_name + sl.slice_type.name + str(sl.slice_index))
+
+    return slices
+
+
+def get_comparisons_from_session(label_session: LabelSession) -> List[Tuple[ImageSlice, ImageSlice]]:
+    comparisons = []
+    for el in label_session.elements:
+        comparisons.append((
+            ImageSlice(el.image_1_name, el.slice_1_index, SliceType[el.slice_1_type]),
+            ImageSlice(el.image_2_name, el.slice_2_index, SliceType[el.slice_2_type])
+        ))
+    return comparisons
 
 
 def sample_slices(dataset: Dataset, slice_type: SliceType, image_count: int, slice_count: int,

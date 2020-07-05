@@ -111,7 +111,7 @@ def dataset_overview(dataset_name: str):
 
 @application.route('/session/<int:session_id>')
 def session_overview(session_id: int):
-    label_session = backend.get_label_session_by_id(db.session, session_id)
+    label_session = sessions.get_session_by_id(db.session, session_id)
     dataset = backend.get_dataset(label_session.dataset)
 
     resume_point = None
@@ -176,14 +176,20 @@ def create_categorical_slice_session(dataset_name: str):
     label_session_count = len(current_sessions)
 
     form = CreateCategoricalSliceSessionForm(meta={'csrf': False})
-    form.comparison_list.choices.append(('test', 'test'))
+
+    comparison_sessions = sessions.get_sessions(db.session, dataset, LabelSessionType.COMPARISON_SLICE)
+    for sess in comparison_sessions:
+        form.comparisons.choices.append((str(sess.id), sess.session_name))
 
     if form.validate_on_submit():
         if form.session_name.data in [se.session_name for se in current_sessions]:
             form.session_name.errors.append('Session name already in use.')
         else:
             label_values = [v.strip() for v in form.label_values.data.split(',')]
-            slices = sampling.sample_slices(dataset, backend.SliceType.SAGITTAL, 3, 1000, 0, 100)  # TODO
+
+            from_session = sessions.get_session_by_id(db.session, int(form.comparisons.data))
+            slices = sampling.get_slices_from_session(from_session)
+
             sessions.create_categorical_slice_session(db.session, form.session_name.data, form.prompt.data,
                                                       dataset, label_values, slices)
             return redirect(url_for('dataset_overview', dataset_name=dataset.name))
@@ -206,11 +212,11 @@ def create_comparison_session(dataset_name: str):
     images = backend.get_images(dataset)
     total_image_count = len(images)
 
-    comparison_lists = backend.get_comparison_lists(dataset)
-
     form = CreateComparisonSessionForm(meta={'csrf': False})
-    for li in comparison_lists:
-        form.comparison_list.choices.append((li, li))
+
+    comparison_sessions = sessions.get_sessions(db.session, dataset, LabelSessionType.COMPARISON_SLICE)
+    for sess in comparison_sessions:
+        form.comparisons.choices.append((str(sess.id), sess.session_name))
 
     form.image_count.validators.append(ComparisonNumberRange(
         min=1, max=total_image_count, message='Must be between %(min)s and %(max)s (the dataset size).'))
@@ -218,16 +224,17 @@ def create_comparison_session(dataset_name: str):
     if form.validate_on_submit():
         if form.session_name.data in [se.session_name for se in current_sessions]:
             form.session_name.errors.append('Session name already in use.')
-        elif form.comparison_list.data == 'create' and form.min_slice_percent.data >= form.max_slice_percent.data:
+        elif form.comparisons.data == 'create' and form.min_slice_percent.data >= form.max_slice_percent.data:
             form.max_slice_percent.errors.append('Max must be greater than min.')
         else:
             slice_type = backend.SliceType[form.slice_type.data]
-            if form.comparison_list.data == 'create':
+            if form.comparisons.data == 'create':
                 slices = sampling.sample_slices(dataset, slice_type, form.image_count.data, form.slice_count.data,
                                                 form.min_slice_percent.data, form.max_slice_percent.data)
                 comparisons = sampling.sample_comparisons(slices, form.comparison_count.data)
             else:
-                comparisons = []  # TODO
+                from_session = sessions.get_session_by_id(db.session, int(form.comparisons.data))
+                comparisons = sampling.get_comparisons_from_session(from_session)
             label_values = []  # TODO
             sessions.create_comparison_slice_session(db.session, form.session_name.data, form.prompt.data,
                                                      dataset, label_values, comparisons)
@@ -361,7 +368,7 @@ def label_compare():
         abort(400)
 
     assert 0 <= comparison_index
-    label_session = backend.get_label_session_by_id(db.session, label_session_id)
+    label_session = sessions.get_session_by_id(db.session, label_session_id)
     if label_session is None or label_session.session_type != LabelSessionType.COMPARISON_SLICE.name:
         abort(400)
 
@@ -371,7 +378,6 @@ def label_compare():
 
     element = labels.get_element_by_index(db.session, label_session, comparison_index)
 
-    comparison_list = backend.load_comparison_list(label_session.comparison_list_name)
     slice_1 = backend.ImageSlice(element.image_1_name, element.slice_1_index, backend.SliceType[element.slice_1_type])
     slice_2 = backend.ImageSlice(element.image_2_name, element.slice_2_index, backend.SliceType[element.slice_2_type])
 
@@ -402,7 +408,7 @@ def label_compare():
                            image_2_index=image_2_index,
                            current_label_value=current_label_value,
                            previous_index=max(0, comparison_index - 1),
-                           next_index=min(len(comparison_list) - 1, comparison_index + 1))
+                           next_index=min(label_session.element_count - 1, comparison_index + 1))
 
 
 @application.route('/api/set-label-value', methods=['POST'])
