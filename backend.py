@@ -1,10 +1,8 @@
 import csv
 import os
-import random
-from datetime import datetime
 from enum import Enum
 from io import StringIO
-from typing import List, Dict, Tuple, NamedTuple, Optional
+from typing import List, Tuple, NamedTuple, Optional
 
 import nibabel
 import numpy as np
@@ -137,11 +135,6 @@ def get_image_info(d_img: DataImage) -> Tuple[Tuple[int, int, int], int]:
     data = __load_cached_image(d_img).get_fdata()
     shape = data.shape
     return (shape[0], shape[1], shape[2]), int(np.max(data))
-
-
-def get_dataset_label_sessions(session: Session, dataset: Dataset) -> List[LabelSession]:
-    return session.query(LabelSession).filter(LabelSession.dataset == dataset.name) \
-        .order_by(LabelSession.date_created).all()
 
 
 def export_labels(session: Session, label_session: LabelSession):

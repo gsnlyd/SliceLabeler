@@ -20,10 +20,10 @@ def get_session_by_id(session: Session, label_session_id: int) -> Optional[Label
 
 
 def get_sessions(session: Session, dataset: Dataset, session_type: LabelSessionType = None) -> List[LabelSession]:
-    label_sessions = session.query(LabelSession).filter(LabelSession.dataset == dataset.name).all()
-    if session_type is None:
-        return label_sessions
-    return list(filter(lambda s: s.session_type == session_type.name, label_sessions))
+    query = session.query(LabelSession).filter(LabelSession.dataset == dataset.name)
+    if session_type is not None:
+        query = query.filter(LabelSession.session_type == session_type.name)
+    return query.all()
 
 
 def create_categorical_image_session(session: Session, name: str, prompt: str,

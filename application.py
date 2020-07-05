@@ -3,16 +3,15 @@ from io import BytesIO
 from typing import Dict, List
 
 from flask import Flask, redirect, url_for, render_template, abort, request, jsonify, send_file
-from wtforms.validators import NumberRange
 
 import backend
 import labels
 import sampling
 import sessions
-from sessions import LabelSessionType
 from forms import CreateCategoricalSessionForm, CreateComparisonSessionForm, ComparisonNumberRange, \
     CreateCategoricalSliceSessionForm
 from model import db, LabelSession
+from sessions import LabelSessionType
 
 application = Flask(__name__)
 
@@ -79,7 +78,7 @@ def export_labels(session_id: int):
 
 @application.route('/datasets')
 def dataset_list():
-    datasets = [(d, backend.get_images(d), backend.get_dataset_label_sessions(db.session, d))
+    datasets = [(d, backend.get_images(d), sessions.get_sessions(db.session, d))
                 for d in backend.get_datasets()]
     return render_template('dataset_list.html',
                            datasets=datasets)
@@ -92,7 +91,7 @@ def dataset_overview(dataset_name: str):
         abort(404)
 
     images = backend.get_images(dataset)
-    label_sessions = backend.get_dataset_label_sessions(db.session, dataset)
+    label_sessions = sessions.get_sessions(db.session, dataset)
 
     sessions_by_type: Dict[LabelSessionType, List[LabelSession]] = {st: [] for st in LabelSessionType}
     for sess in label_sessions:
@@ -141,7 +140,7 @@ def create_categorical_session(dataset_name: str):
     if dataset is None:
         abort(400)
 
-    current_sessions = backend.get_dataset_label_sessions(db.session, dataset)
+    current_sessions = sessions.get_sessions(db.session, dataset)
     label_session_count = len(current_sessions)
 
     form = CreateCategoricalSessionForm(meta={'csrf': False})
@@ -167,7 +166,7 @@ def create_categorical_slice_session(dataset_name: str):
     if dataset is None:
         abort(400)
 
-    current_sessions = backend.get_dataset_label_sessions(db.session, dataset)
+    current_sessions = sessions.get_sessions(db.session, dataset)
     label_session_count = len(current_sessions)
 
     form = CreateCategoricalSliceSessionForm(meta={'csrf': False})
@@ -201,7 +200,7 @@ def create_comparison_session(dataset_name: str):
     if dataset is None:
         abort(400)
 
-    current_sessions = backend.get_dataset_label_sessions(db.session, dataset)
+    current_sessions = sessions.get_sessions(db.session, dataset)
     label_session_count = len(current_sessions)
 
     images = backend.get_images(dataset)
