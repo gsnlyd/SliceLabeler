@@ -63,10 +63,9 @@ function updateSelected(labelValue) {
 
 async function setLabel(labelValue) {
     const setLabelJson = {
-        'label_session_id': labelSessionId,
-        'comparison_index': comparisonIndex,
+        'element_id': elementId,
         'label_value': labelValue,
-        'time_taken_ms': getTimeTaken()
+        'ms': getTimeTaken()
     };
     const rawResponse = await fetch('/api/set-comparison-label-value', {
         method: 'POST',

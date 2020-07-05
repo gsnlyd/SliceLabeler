@@ -16,8 +16,9 @@ class LabelSession(db.Model):
     prompt = db.Column(db.String(1000), nullable=False)
 
     date_created = db.Column(db.DateTime, nullable=False)
+    label_values_str = db.Column(db.String(1000), nullable=False)
 
-    label_values_str = db.Column(db.String(1000), nullable=True)
+    element_count = db.Column(db.Integer, nullable=False)
 
     elements: 'List[SessionElement]' = db.relationship('SessionElement', back_populates='session',
                                                        order_by='SessionElement.id')

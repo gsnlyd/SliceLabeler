@@ -5,6 +5,7 @@ from flask import Flask, redirect, url_for, render_template, abort, request, jso
 from wtforms.validators import NumberRange
 
 import backend
+import labels
 import sampling
 import sessions
 from sessions import LabelSessionType
@@ -112,53 +113,30 @@ def dataset_overview(dataset_name: str):
 def session_overview(session_id: int):
     label_session = backend.get_label_session_by_id(db.session, session_id)
     dataset = backend.get_dataset(label_session.dataset)
-    if label_session.session_type == LabelSessionType.CATEGORICAL_VOLUME.value:
+
+    resume_point = None
+    for session_element in label_session.elements:
+        if len(session_element.labels) == 0:
+            resume_point = session_element.element_index
+            break
+
+    if label_session.session_type == LabelSessionType.CATEGORICAL_IMAGE.name:
         images = backend.get_images(dataset)
-        session_labels = backend.get_session_labels_categorical(db.session, label_session.id, images)
-
-        resume_point = None
-        for im_index, (im_name, im_labels) in enumerate(session_labels.items()):
-            if len(im_labels) == 0:
-                resume_point = im_index
-                break
-
         return render_template('session_overview_categorical.html',
                                label_session=label_session,
                                dataset=dataset,
                                images=images,
-                               session_labels=session_labels,
                                resume_point=resume_point)
-    elif label_session.session_type == LabelSessionType.CATEGORICAL_SLICE.value:
-        slices = backend.get_comparison_slices(label_session.comparison_list_name)
-        slice_labels = backend.get_slice_labels(db.session, label_session.id, slices)
 
-        resume_point = None
-        for sl_index, sl_labels in enumerate(slice_labels):
-            if len(sl_labels) == 0:
-                resume_point = sl_index
-                break
-
+    elif label_session.session_type == LabelSessionType.CATEGORICAL_SLICE.name:
         return render_template('session_overview_categorical_slice.html',
                                label_session=label_session,
                                dataset=dataset,
-                               slices=slices,
-                               slice_labels=slice_labels,
                                resume_point=resume_point)
     else:  # COMPARISON_SLICE
-        comparison_list = backend.load_comparison_list(label_session.comparison_list_name)
-        session_labels = backend.get_session_labels_comparison(db.session, label_session.id, comparison_list)
-
-        resume_point = None
-        for co_index, co_labels in enumerate(session_labels):
-            if len(co_labels) == 0:
-                resume_point = co_index
-                break
-
         return render_template('session_overview_comparison.html',
                                label_session=label_session,
                                dataset=dataset,
-                               comparison_list=comparison_list,
-                               session_labels=session_labels,
                                resume_point=resume_point)
 
 
@@ -198,17 +176,14 @@ def create_categorical_slice_session(dataset_name: str):
     label_session_count = len(current_sessions)
 
     form = CreateCategoricalSliceSessionForm(meta={'csrf': False})
-    comparison_lists = backend.get_comparison_lists(dataset)
-    for li in comparison_lists:
-        form.comparison_list.choices.append((li, li))
+    form.comparison_list.choices.append(('test', 'test'))
 
     if form.validate_on_submit():
         if form.session_name.data in [se.session_name for se in current_sessions]:
             form.session_name.errors.append('Session name already in use.')
         else:
-            assert form.comparison_list.data in comparison_lists
             label_values = [v.strip() for v in form.label_values.data.split(',')]
-            slices = sampling.sample_slices(dataset, backend.SliceType.SAGITTAL, 100, 1000, 0, 100)  # TODO
+            slices = sampling.sample_slices(dataset, backend.SliceType.SAGITTAL, 3, 1000, 0, 100)  # TODO
             sessions.create_categorical_slice_session(db.session, form.session_name.data, form.prompt.data,
                                                       dataset, label_values, slices)
             return redirect(url_for('dataset_overview', dataset_name=dataset.name))
@@ -301,22 +276,25 @@ def label():
     if label_session_id is None or image_index is None:
         abort(400)
 
-    label_session = backend.get_label_session_by_id(db.session, label_session_id)
-    if label_session is None or label_session.session_type != 'categorical':
+    label_session = sessions.get_session_by_id(db.session, label_session_id)
+    if label_session is None or label_session.session_type != LabelSessionType.CATEGORICAL_IMAGE.name:
         abort(400)
 
     dataset = backend.get_dataset(label_session.dataset)
     if dataset is None:
         abort(400)
 
-    image, image_count = backend.get_image_by_index(dataset, image_index)
+    element = labels.get_element_by_index(db.session, label_session, image_index)
+    image = backend.get_image(dataset, element.image_1_name)
     if image is None:
         abort(400)
+
+    image_count = label_session.element_count
 
     slice_counts, max_value = backend.get_image_info(image)
 
     label_values = label_session.label_values()
-    image_label_value = backend.get_current_categorical_label_value(db.session, label_session_id, image)
+    image_label_value = element.current_label_value()
 
     return render_template('viewer.html',
                            viewer_mode='label',
@@ -327,6 +305,7 @@ def label():
                            image=image,
                            image_count=image_count,
                            image_index=image_index,
+                           element_id=element.id,
                            slice_counts=slice_counts,
                            image_max=max_value,
                            label_values=label_values,
@@ -341,35 +320,36 @@ def label_categorical_slice():
     if label_session_id is None or image_slice_index is None:
         abort(400)
 
-    label_session = backend.get_label_session_by_id(db.session, label_session_id)
-    if label_session is None or label_session.session_type != LabelSessionType.CATEGORICAL_SLICE.value:
+    label_session = sessions.get_session_by_id(db.session, label_session_id)
+    if label_session is None or label_session.session_type != LabelSessionType.CATEGORICAL_SLICE.name:
         abort(400)
 
     dataset = backend.get_dataset(label_session.dataset)
     if dataset is None:
         abort(400)
 
-    session_slices = backend.get_comparison_slices(label_session.comparison_list_name)
-    im_slice = session_slices[image_slice_index]
-
-    image = backend.get_image(dataset, im_slice.image_name)
+    element = labels.get_element_by_index(db.session, label_session, image_slice_index)
+    image = backend.get_image(dataset, element.image_1_name)
     if image is None:
         abort(400)
 
+    im_slice = backend.ImageSlice(element.image_1_name, element.slice_1_index, backend.SliceType[element.slice_1_type])
+
     _, max_value = backend.get_image_info(image)
 
-    slice_label_value = backend.get_current_slice_label_value(db.session, label_session.id, image_slice_index)
+    slice_label_value = element.current_label_value()
     return render_template('label_categorical_slice.html',
                            label_session=label_session,
                            dataset=dataset,
+                           element_id=element.id,
                            image=image,
                            image_slice_index=image_slice_index,
                            image_slice=im_slice,
                            slice_label_value=slice_label_value,
-                           slice_count=len(session_slices),
+                           slice_count=label_session.element_count,
                            image_max=max_value,
                            previous_index=max(0, image_slice_index - 1),
-                           next_index=min(len(session_slices) - 1, image_slice_index + 1))
+                           next_index=min(label_session.element_count - 1, image_slice_index + 1))
 
 
 @application.route('/compare')
@@ -382,19 +362,23 @@ def label_compare():
 
     assert 0 <= comparison_index
     label_session = backend.get_label_session_by_id(db.session, label_session_id)
-    if label_session is None or label_session.session_type != 'comparison':
+    if label_session is None or label_session.session_type != LabelSessionType.COMPARISON_SLICE.name:
         abort(400)
 
     dataset = backend.get_dataset(label_session.dataset)
-
     if dataset is None:
         abort(400)
 
+    element = labels.get_element_by_index(db.session, label_session, comparison_index)
+
     comparison_list = backend.load_comparison_list(label_session.comparison_list_name)
-    slice_1, slice_2 = comparison_list[comparison_index]
+    slice_1 = backend.ImageSlice(element.image_1_name, element.slice_1_index, backend.SliceType[element.slice_1_type])
+    slice_2 = backend.ImageSlice(element.image_2_name, element.slice_2_index, backend.SliceType[element.slice_2_type])
+
     image_1 = backend.get_image(dataset, slice_1.image_name)
     image_2 = backend.get_image(dataset, slice_2.image_name)
 
+    # TODO: Use elements
     images = backend.get_images(dataset)
     image_1_index = images.index(image_1)
     image_2_index = images.index(image_2)
@@ -402,7 +386,7 @@ def label_compare():
     _, image_1_max = backend.get_image_info(image_1)
     _, image_2_max = backend.get_image_info(image_2)
 
-    current_label_value = backend.get_current_comparison_label_value(db.session, label_session_id, comparison_index)
+    current_label_value = element.current_label_value()
 
     return render_template('label_compare.html',
                            label_session_id=label_session_id,
@@ -425,72 +409,9 @@ def label_compare():
 def api_set_label():
     print(request.json)
 
-    label_session = backend.get_label_session_by_id(db.session, request.json['label_session_id'])
-    if label_session is None or label_session.session_type != LabelSessionType.CATEGORICAL_VOLUME.value:
-        abort(400)
-
-    dataset = backend.get_dataset(label_session.dataset)
-    image = backend.get_image(dataset, request.json['image_name'])
-    if image is None:
-        abort(400)
-
-    backend.set_categorical_label(
-        session=db.session,
-        label_session=label_session,
-        image=image,
-        label_value=request.json['label_value'],
-        interaction_ms=request.json['interaction_ms']
-    )
+    element = labels.get_element_by_id(db.session, request.json['element_id'])
+    labels.set_label(db.session, element, request.json['label_value'], request.json['ms'])
 
     return jsonify({
         'Success': True
-    })
-
-
-@application.route('/api/set-categorical-slice-label-value', methods=['POST'])
-def api_set_categorical_slice_label():
-    print(request.json)
-
-    label_session = backend.get_label_session_by_id(db.session, request.json['label_session_id'])
-    if label_session is None or label_session.session_type != LabelSessionType.CATEGORICAL_SLICE.value:
-        abort(400)
-
-    im_slice_index = request.json['image_slice_index']
-    im_slice = backend.get_comparison_slices(label_session.comparison_list_name)[im_slice_index]
-
-    backend.set_slice_label(
-        session=db.session,
-        label_session=label_session,
-        image_slice_index=im_slice_index,
-        image_slice=im_slice,
-        label_value=request.json['label_value'],
-        interaction_ms=request.json['interaction_ms']
-    )
-
-    return jsonify({
-        'Success': True
-    })
-
-
-@application.route('/api/set-comparison-label-value', methods=['POST'])
-def api_set_comparison_label():
-    print(request.json)
-
-    label_session = backend.get_label_session_by_id(db.session, request.json['label_session_id'])
-    if label_session is None:
-        abort(400)
-
-    comparison_index = request.json['comparison_index']
-    if type(comparison_index) is not int:
-        abort(400)
-
-    label_value = request.json['label_value']
-    time_taken_ms = request.json['time_taken_ms']
-    if type(time_taken_ms) is not int:
-        abort(400)
-
-    backend.set_comparison_label(db.session, label_session, comparison_index, label_value, time_taken_ms)
-
-    return jsonify({
-        'success': True
     })

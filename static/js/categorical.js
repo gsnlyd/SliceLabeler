@@ -43,10 +43,9 @@ function setImage(newImageIndex) {
 async function setLabel(labelValue) {
     trackInteraction();
     const setLabelJson = {
-        'label_session_id': labelSessionId,
-        'image_name': imageName,
+        'element_id': elementId,
         'label_value': labelValue,
-        'interaction_ms': interactionMs
+        'ms': interactionMs
     };
     const rawResponse = await fetch('/api/set-label-value', {
         method: 'POST',

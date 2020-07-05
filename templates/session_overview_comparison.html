@@ -20,17 +20,17 @@
                 </tr>
             </thead>
             <tbody>
-                {% for co in comparison_list %}
-                    {% set co_labels = session_labels[loop.index0] %}
+                {% for session_element in label_session.elements %}
+                    {% set label_val = session_element.current_label_value()  %}
                     <tr>
                         <td class="align-right">{{ loop.index }}</td>
-                        <td class="align-center">{{ co[0].image_name }}</td>
-                        <td class="align-center">{{ co[0].slice_type.name.capitalize() }}</td>
-                        <td class="align-right">{{ co[0].slice_index }}</td>
-                        <td class="align-center">{{ co[1].image_name }}</td>
-                        <td class="align-center">{{ co[1].slice_type.name.capitalize() }}</td>
-                        <td class="align-right">{{ co[1].slice_index }}</td>
-                        <td class="align-center"><a href="{{ url_for('label_compare', label_session=label_session.id, i=loop.index0) }}" class="text-gray text-link">{{ co_labels[0].label_value if co_labels|length > 0 else 'Unlabeled' }}</a></td>
+                        <td class="align-center">{{ session_element.image_1_name }}</td>
+                        <td class="align-center">{{ session_element.slice_1_type.capitalize() }}</td>
+                        <td class="align-right">{{ session_element.slice_1_index }}</td>
+                        <td class="align-center">{{ session_element.image_2_name }}</td>
+                        <td class="align-center">{{ session_element.slice_2_type.capitalize() }}</td>
+                        <td class="align-right">{{ session_element.slice_2_index }}</td>
+                        <td class="align-center"><a href="{{ url_for('label_compare', label_session=label_session.id, i=loop.index0) }}" class="text-gray text-link">{{ 'Unlabeled' if label_val is none else label_val }}</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

@@ -56,12 +56,11 @@ function updateSlice() {
 async function setLabel(labelValue) {
     trackInteraction();
     const setLabelJson = {
-        'label_session_id': labelSessionId,
-        'image_slice_index': imageSliceIndex,
+        'element_id': elementId,
         'label_value': labelValue,
-        'interaction_ms': interactionMs
+        'ms': interactionMs
     };
-    const rawResponse = await fetch('/api/set-categorical-slice-label-value', {
+    const rawResponse = await fetch('/api/set-label-value', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',

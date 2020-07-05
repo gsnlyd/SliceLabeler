@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum, auto
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from sqlalchemy.orm import Session
 
@@ -15,20 +15,26 @@ class LabelSessionType(Enum):
     COMPARISON_SLICE = auto()
 
 
+def get_session_by_id(session: Session, label_session_id: int) -> Optional[LabelSession]:
+    return session.query(LabelSession).filter(LabelSession.id == label_session_id).one_or_none()
+
+
 def create_categorical_image_session(session: Session, name: str, prompt: str,
                                      dataset: Dataset, label_values: List[str]):
+    images = backend.get_images(dataset)
+
     label_session = LabelSession(
         dataset=dataset.name,
         session_name=name,
         session_type=LabelSessionType.CATEGORICAL_IMAGE.name,
         prompt=prompt,
         date_created=datetime.now(),
-        label_values_str=','.join(label_values)
+        label_values_str=','.join(label_values),
+        element_count=len(images)
     )
 
     session.add(label_session)
 
-    images = backend.get_images(dataset)
     for i, im in enumerate(images):
         el = SessionElement(
             element_index=i,
@@ -48,7 +54,8 @@ def create_categorical_slice_session(session: Session, name: str, prompt: str,
         session_type=LabelSessionType.CATEGORICAL_SLICE.name,
         prompt=prompt,
         date_created=datetime.now(),
-        label_values_str=','.join(label_values)
+        label_values_str=','.join(label_values),
+        element_count=len(slices)
     )
 
     session.add(label_session)
@@ -75,7 +82,8 @@ def create_comparison_slice_session(session: Session, name: str, prompt: str,
         session_type=LabelSessionType.COMPARISON_SLICE.name,
         prompt=prompt,
         date_created=datetime.now(),
-        label_values_str=','.join(label_values)
+        label_values_str=','.join(label_values),
+        element_count=len(comparisons)
     )
 
     session.add(label_session)
