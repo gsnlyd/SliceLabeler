@@ -71,6 +71,20 @@ def export_labels(session_id: int):
                      cache_timeout=0)
 
 
+@application.route('/export-session/<int:session_id>')
+def export_session(session_id: int):
+    label_session = sessions.get_session_by_id(db.session, session_id)
+    if label_session is None:
+        abort(400)
+
+    session_bytes = sessions.export_session(label_session)
+    return send_file(session_bytes,
+                     mimetype='application/json',
+                     as_attachment=True,
+                     attachment_filename=label_session.session_name + '.json',
+                     cache_timeout=0)
+
+
 @application.route('/datasets')
 def dataset_list():
     datasets = [(d, backend.get_images(d), sessions.get_sessions(db.session, d))

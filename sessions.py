@@ -1,6 +1,8 @@
+import json
 from datetime import datetime
 from enum import Enum, auto
-from typing import List, Tuple, Optional
+from io import BytesIO, StringIO
+from typing import List, Tuple, Optional, Dict
 
 from sqlalchemy.orm import Session
 
@@ -109,3 +111,41 @@ def create_comparison_slice_session(session: Session, name: str, prompt: str,
         session.add(el)
 
     session.commit()
+
+
+def export_session(label_session: LabelSession) -> BytesIO:
+    session_json = {
+        'dataset': label_session.dataset,
+        'session_name': label_session.session_name,
+        'session_type': label_session.session_type,
+        'prompt': label_session.prompt,
+        'label_values_str': label_session.label_values_str
+    }
+
+    def conv_str(val) -> str:
+        if val is None:
+            return 'None'
+        if type(val) is str:
+            return val
+        return str(val)
+
+    elements_rows = []
+    for el in label_session.elements:
+        elements_rows.append(','.join((
+            conv_str(el.element_index),
+            conv_str(el.image_1_name), conv_str(el.slice_1_type), conv_str(el.slice_1_index),
+            conv_str(el.image_2_name), conv_str(el.slice_2_type), conv_str(el.slice_2_index),
+        )))
+
+    session_json['elements'] = elements_rows
+
+    sio = StringIO()
+    json.dump(session_json, sio, indent=1)
+
+    bio = BytesIO()
+    bio.write(sio.getvalue().encode('utf-8'))
+
+    bio.seek(0)
+    sio.close()
+
+    return bio
