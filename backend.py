@@ -1,22 +1,18 @@
-import csv
 import os
 from enum import Enum
-from io import StringIO
 from typing import List, Tuple, NamedTuple, Optional
 
 import nibabel
 import numpy as np
 from PIL import Image
-from sqlalchemy.orm import Session
-
-from model import LabelSession
 
 DATASETS_PATH = 'data/datasets'
 SLICES_PATH = 'static/slices'
 COMPARISON_LISTS_PATH = 'comparison_lists'
 
 ALLOWED_IMAGE_EXTENSIONS = [  # TODO: Add more
-    'nii.gz'
+    'nii.gz',
+    'nii'
 ]
 
 THUMB_CACHE_SIZE = 4
