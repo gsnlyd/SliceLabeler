@@ -118,7 +118,7 @@
                 </div>
                 <div class="viewer-label-controls">
                 {% if viewer_mode == 'label' %}
-                {% for lv in label_values %}
+                {% for lv in label_session.label_values() %}
                     {% set selected = (lv == image_label_value) %}
                     <button class="viewer-label-button text-m {% if selected %}selected{% endif %}" data-element-id="{{ element_id }}" data-label-value="{{ lv }}">{{ lv }} ({{ loop.index }})</button>
                 {% endfor %}
@@ -131,17 +131,12 @@
         const sliceCounts = [{{ slice_counts[0] }}, {{ slice_counts[1] }}, {{ slice_counts[2] }}];
         const datasetName = '{{ dataset.name }}';
         const imageName = '{{ image.name }}';
-        const imageIndex = {{ image_index }};
-        const imageCount = {{ image_count }};
 
         let sliceIndices = sliceCounts.map(c => Math.floor(c / 2));
     </script>
     <script type="text/javascript" src="/static/js/viewer.js"></script>
     {% if viewer_mode == 'label' %}
-        <script type="text/javascript">
-            const labelSessionId = {{ label_session_id }};
-        </script>
-        <script type="text/javascript" src="/static/js/paginate.js"></script>
-        <script type="text/javascript" src="/static/js/categorical.js"></script>
+    <script type="text/javascript" src="/static/js/paginate.js"></script>
+    <script type="text/javascript" src="/static/js/categorical.js"></script>
     {% endif %}
 {% endblock %}

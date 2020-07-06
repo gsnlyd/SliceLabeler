@@ -3,17 +3,17 @@
 {% block body %}
     <div class="main-container-full">
         <div class="compare-title text-l">
-            <a href="{{ url_for('session_overview', session_id=label_session_id) }}" class="compare-session-link text-link text-m text-orange">Back to {{ label_session.session_name }}</a>
+            <a href="{{ url_for('session_overview', session_id=label_session.id) }}" class="compare-session-link text-link text-m text-orange">Back to {{ label_session.session_name }}</a>
             <span>{{ prompt }}</span>
         </div>
         <div class="compare-header">
             <div class="compare-image-info">
-                <a href="{{ url_for('label_compare', label_session=label_session_id, i=previous_index) }}" class="link-button text-s" id="previous-link">< Prev</a>
+                <a href="{{ url_for('label_compare', label_session=label_session.id, i=previous_index) }}" class="link-button text-s" id="previous-link">< Prev</a>
                 <a href="{{ url_for('viewer', dataset=dataset.name, image=slice_1.image_name) }}" class="text-link text-s text-gray">{{ dataset.name }} / {{ slice_1.image_name }} ({{ slice_1.slice_type.name.capitalize() }} #{{ slice_1.slice_index }})</a>
             </div>
             <div class="compare-image-info">
                 <a href="{{ url_for('viewer', dataset=dataset.name, image=slice_2.image_name) }}" class="text-link text-s text-gray">{{ dataset.name }} / {{ slice_2.image_name }} ({{ slice_2.slice_type.name.capitalize() }} #{{ slice_2.slice_index }})</a>
-                <a href="{{ url_for('label_compare', label_session=label_session_id, i=next_index) }}" class="link-button text-s" id="next-link">Next ></a>
+                <a href="{{ url_for('label_compare', label_session=label_session.id, i=next_index) }}" class="link-button text-s" id="next-link">Next ></a>
             </div>
         </div>
         <div class="compare-container">
@@ -98,9 +98,7 @@
     <script>
         const elementId = {{ element_id }};
 
-        const labelSessionId = {{ label_session_id }};
         const datasetName = '{{ dataset.name }}';
-        const comparisonIndex = {{ comparison_index }};
         const imageName1 = '{{ slice_1.image_name }}';
         const imageName2 = '{{ slice_2.image_name }}';
         const sliceIndex1 = '{{ slice_1.slice_index }}';

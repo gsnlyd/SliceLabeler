@@ -267,9 +267,9 @@ def viewer():
 @application.route('/label')
 def label():
     label_session_id = request.args.get('label_session', type=int, default=None)
-    image_index = request.args.get('i', type=int, default=None)
+    element_index = request.args.get('i', type=int, default=None)
 
-    if label_session_id is None or image_index is None:
+    if label_session_id is None or element_index is None:
         abort(400)
 
     label_session = sessions.get_session_by_id(db.session, label_session_id)
@@ -280,42 +280,35 @@ def label():
     if dataset is None:
         abort(400)
 
-    element = labels.get_element_by_index(db.session, label_session, image_index)
+    element = labels.get_element_by_index(db.session, label_session, element_index)
     image = backend.get_image(dataset, element.image_1_name)
     if image is None:
         abort(400)
 
-    image_count = label_session.element_count
-
     slice_counts, max_value = backend.get_image_info(image)
 
-    label_values = label_session.label_values()
     image_label_value = element.current_label_value()
 
     return render_template('viewer.html',
                            viewer_mode='label',
-                           label_session_id=label_session_id,
                            label_session=label_session,
                            prompt=label_session.prompt,
                            dataset=dataset,
                            image=image,
-                           image_count=image_count,
-                           image_index=image_index,
                            element_id=element.id,
                            slice_counts=slice_counts,
                            image_max=max_value,
-                           label_values=label_values,
                            image_label_value=image_label_value,
-                           previous_index=max(0, image_index - 1),
-                           next_index=min(label_session.element_count - 1, image_index + 1))
+                           previous_index=max(0, element_index - 1),
+                           next_index=min(label_session.element_count - 1, element_index + 1))
 
 
 @application.route('/label-categorical-slice')
 def label_categorical_slice():
     label_session_id = request.args.get('label_session', type=int, default=None)
-    image_slice_index = request.args.get('i', type=int, default=None)
+    element_index = request.args.get('i', type=int, default=None)
 
-    if label_session_id is None or image_slice_index is None:
+    if label_session_id is None or element_index is None:
         abort(400)
 
     label_session = sessions.get_session_by_id(db.session, label_session_id)
@@ -326,7 +319,7 @@ def label_categorical_slice():
     if dataset is None:
         abort(400)
 
-    element = labels.get_element_by_index(db.session, label_session, image_slice_index)
+    element = labels.get_element_by_index(db.session, label_session, element_index)
     image = backend.get_image(dataset, element.image_1_name)
     if image is None:
         abort(400)
@@ -340,14 +333,11 @@ def label_categorical_slice():
                            label_session=label_session,
                            dataset=dataset,
                            element_id=element.id,
-                           image=image,
-                           image_slice_index=image_slice_index,
                            image_slice=im_slice,
                            slice_label_value=slice_label_value,
-                           slice_count=label_session.element_count,
                            image_max=max_value,
-                           previous_index=max(0, image_slice_index - 1),
-                           next_index=min(label_session.element_count - 1, image_slice_index + 1))
+                           previous_index=max(0, element_index - 1),
+                           next_index=min(label_session.element_count - 1, element_index + 1))
 
 
 @application.route('/compare')
@@ -375,29 +365,20 @@ def label_compare():
     image_1 = backend.get_image(dataset, slice_1.image_name)
     image_2 = backend.get_image(dataset, slice_2.image_name)
 
-    # TODO: Use elements
-    images = backend.get_images(dataset)
-    image_1_index = images.index(image_1)
-    image_2_index = images.index(image_2)
-
     _, image_1_max = backend.get_image_info(image_1)
     _, image_2_max = backend.get_image_info(image_2)
 
     current_label_value = element.current_label_value()
 
     return render_template('label_compare.html',
-                           label_session_id=label_session_id,
                            label_session=label_session,
                            prompt=label_session.prompt,
                            dataset=dataset,
-                           comparison_index=comparison_index,
                            element_id=element.id,
                            slice_1=slice_1,
                            slice_2=slice_2,
                            image_1_max=image_1_max,
                            image_2_max=image_2_max,
-                           image_1_index=image_1_index,
-                           image_2_index=image_2_index,
                            current_label_value=current_label_value,
                            previous_index=max(0, comparison_index - 1),
                            next_index=min(label_session.element_count - 1, comparison_index + 1))
