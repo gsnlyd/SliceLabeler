@@ -18,9 +18,6 @@ const slice2 = document.getElementById('slice-2');
 const neitherButton = document.getElementById('neither-button');
 const notSureButton = document.getElementById('not-sure-button');
 
-const previousLink = document.getElementById('compare-previous');
-const nextLink = document.getElementById('compare-next');
-
 const minIntensityEl1 = document.getElementById('intensity-min-1');
 const maxIntensityEl1 = document.getElementById('intensity-max-1');
 
@@ -67,7 +64,7 @@ async function setLabel(labelValue) {
         'label_value': labelValue,
         'ms': getTimeTaken()
     };
-    const rawResponse = await fetch('/api/set-comparison-label-value', {
+    const rawResponse = await fetch('/api/set-label-value', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -125,12 +122,6 @@ document.addEventListener('keydown', ev => {
         maxIntensityEl1.value = maxIntensityEl1.value / 2;
         maxIntensityEl2.value = maxIntensityEl2.value / 2;
         updateSlices();
-    }
-    else if (ev.code === 'Space') {
-        nextLink.click();
-    }
-    else if (ev.code === 'KeyU') {
-        previousLink.click();
     }
     else if(ev.code === 'Digit1') {
         setLabel('First');

@@ -8,12 +8,12 @@
         </div>
         <div class="compare-header">
             <div class="compare-image-info">
-                <a href="{{ url_for('label_compare', label_session=label_session_id, i=previous_index) }}" class="link-button text-s" id="compare-previous">< Prev</a>
+                <a href="{{ url_for('label_compare', label_session=label_session_id, i=previous_index) }}" class="link-button text-s" id="previous-link">< Prev</a>
                 <a href="{{ url_for('viewer', dataset=dataset.name, i=image_1_index) }}" class="text-link text-s text-gray">{{ dataset.name }} / {{ slice_1.image_name }} ({{ slice_1.slice_type.name.capitalize() }} #{{ slice_1.slice_index }})</a>
             </div>
             <div class="compare-image-info">
                 <a href="{{ url_for('viewer', dataset=dataset.name, i=image_2_index) }}" class="text-link text-s text-gray">{{ dataset.name }} / {{ slice_2.image_name }} ({{ slice_2.slice_type.name.capitalize() }} #{{ slice_2.slice_index }})</a>
-                <a href="{{ url_for('label_compare', label_session=label_session_id, i=next_index) }}" class="link-button text-s" id="compare-next">Next ></a>
+                <a href="{{ url_for('label_compare', label_session=label_session_id, i=next_index) }}" class="link-button text-s" id="next-link">Next ></a>
             </div>
         </div>
         <div class="compare-container">
@@ -109,5 +109,6 @@
         const sliceType2 = '{{ slice_2.slice_type.name }}';
         {% if current_label_value is none %}const initialLabel = null;{% else %}const initialLabel = '{{ current_label_value }}';{% endif %}
     </script>
+    <script type="text/javascript" src="/static/js/paginate.js"></script>
     <script type="text/javascript" src="/static/js/compare.js"></script>
 {% endblock %}

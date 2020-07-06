@@ -436,6 +436,15 @@ h1, h2, h3, h4, h5, h6 {
 
 .viewer-title {
     margin-bottom: 15px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.viewer-title-info {
+    margin-left: 10px;
 }
 
 .viewer-session-link {
@@ -443,7 +452,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .viewer-prompt {
-    float: right;
+    margin-right: 15px;
 }
 
 .viewer-content-container {

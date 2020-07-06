@@ -310,7 +310,9 @@ def label():
                            slice_counts=slice_counts,
                            image_max=max_value,
                            label_values=label_values,
-                           image_label_value=image_label_value)
+                           image_label_value=image_label_value,
+                           previous_index=max(0, image_index - 1),
+                           next_index=min(label_session.element_count - 1, image_index + 1))
 
 
 @application.route('/label-categorical-slice')
@@ -394,6 +396,7 @@ def label_compare():
                            prompt=label_session.prompt,
                            dataset=dataset,
                            comparison_index=comparison_index,
+                           element_id=element.id,
                            slice_1=slice_1,
                            slice_2=slice_2,
                            image_1_max=image_1_max,

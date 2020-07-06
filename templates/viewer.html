@@ -3,11 +3,27 @@
 {% block body %}
     <div class="main-container-full">
         <div class="viewer-container card">
+            {% if viewer_mode == 'label' %}
+            <div class="text-m">
+                <a href="{{ url_for('session_overview', session_id=label_session_id) }}" class="viewer-session-link text-link text-orange">Back to {{ label_session.session_name }}</a>
+            </div>
+            {% endif %}
             <div class="viewer-title text-m">
-                {% if viewer_mode == 'label' %}<a href="{{ url_for('session_overview', session_id=label_session_id) }}" class="viewer-session-link text-link text-orange">Back to {{ label_session.session_name }}</a>{% endif %}
-                <a href="{{ url_for('dataset_overview', dataset_name=dataset.name) }}" class="text-link text-m hover-underline">{{ dataset.name }}</a>
-                <span>/ {{ image.name }}</span>
-                {% if viewer_mode == 'label' %}<span class="viewer-prompt text-l">{{ prompt }}</span>{% endif %}
+                <div>
+                    {% if viewer_mode == 'label' %}
+                    <a class="link-button text-s" href="{{ url_for('label', label_session=label_session.id, i=previous_index) }}" id="previous-link">Prev</a>
+                    {% endif %}
+                    <span class="viewer-title-info">
+                        <a href="{{ url_for('dataset_overview', dataset_name=dataset.name) }}" class="text-link text-m hover-underline">{{ dataset.name }}</a>
+                        <span>/ {{ image.name }}</span>
+                    </span>
+                </div>
+                <div>
+                    {% if viewer_mode == 'label' %}
+                    <span class="viewer-prompt weight-medium">{{ prompt }}</span>
+                    <a class="link-button text-s" href="{{ url_for('label', label_session=label_session.id, i=next_index) }}" id="next-link">Next</a>
+                    {% endif %}
+                </div>
             </div>
             <div class="viewer-content-container">
                 <div class="viewer-slice-controls">
@@ -104,7 +120,7 @@
                 {% if viewer_mode == 'label' %}
                 {% for lv in label_values %}
                     {% set selected = (lv == image_label_value) %}
-                    <button class="viewer-label-button text-m {% if selected %}selected{% endif %}" data-label-value="{{ lv }}">{{ lv }} ({{ loop.index }})</button>
+                    <button class="viewer-label-button text-m {% if selected %}selected{% endif %}" data-element-id="{{ element_id }}" data-label-value="{{ lv }}">{{ lv }} ({{ loop.index }})</button>
                 {% endfor %}
                 {% endif %}
                 </div>
@@ -112,8 +128,6 @@
         </div>
     </div>
     <script type="text/javascript">
-        const elementId = {{ element_id }};
-
         const sliceCounts = [{{ slice_counts[0] }}, {{ slice_counts[1] }}, {{ slice_counts[2] }}];
         const datasetName = '{{ dataset.name }}';
         const imageName = '{{ image.name }}';
@@ -127,6 +141,7 @@
         <script type="text/javascript">
             const labelSessionId = {{ label_session_id }};
         </script>
+        <script type="text/javascript" src="/static/js/paginate.js"></script>
         <script type="text/javascript" src="/static/js/categorical.js"></script>
     {% endif %}
 {% endblock %}

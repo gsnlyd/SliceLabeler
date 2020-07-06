@@ -32,15 +32,7 @@ const labelButtons = document.querySelectorAll('.viewer-label-button');
 
 // Label Functions
 
-function setImage(newImageIndex) {
-    const paramString = new URLSearchParams({
-        'label_session': labelSessionId,
-        'i': newImageIndex
-    }).toString();
-    window.location = '/label?' + paramString;
-}
-
-async function setLabel(labelValue) {
+async function setLabel(elementId, labelValue) {
     trackInteraction();
     const setLabelJson = {
         'element_id': elementId,
@@ -82,18 +74,8 @@ document.addEventListener('keydown', ev => {
         return;
     }
 
-    // Previous Image
-    if (ev.code === 'KeyU') {
-        setImage(Math.max(0, imageIndex - 1));
-    }
-    // Next Image
-    else if (ev.code === 'Space') {
-        setImage(Math.min(imageCount - 1, imageIndex + 1));
-
-        ev.preventDefault();
-    }
     // Label
-    else if (ev.code.startsWith('Digit')) {
+    if (ev.code.startsWith('Digit')) {
         const num = parseInt(ev.code.substring(5, 6)) - 1;
         if (num >= 0 && num < labelButtons.length) {
             labelButtons[num].click();
@@ -103,6 +85,6 @@ document.addEventListener('keydown', ev => {
 
 for (const buttonEl of labelButtons) {
     buttonEl.addEventListener('click', ev => {
-        setLabel(buttonEl.dataset.labelValue)
+        setLabel(parseInt(buttonEl.dataset.elementId), buttonEl.dataset.labelValue)
     })
 }
