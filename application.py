@@ -239,16 +239,16 @@ def create_comparison_session(dataset_name: str):
 @application.route('/viewer')
 def viewer():
     dataset_name = request.args.get('dataset', type=str, default=None)
-    image_index = request.args.get('i', type=int, default=None)
+    image_name = request.args.get('image', type=str, default=None)
 
-    if dataset_name is None or image_index is None:
+    if dataset_name is None or image_name is None:
         abort(400)
 
     dataset = backend.get_dataset(dataset_name)
     if dataset is None:
         abort(400)
 
-    image, image_count = backend.get_image_by_index(dataset, image_index)
+    image = backend.get_image(dataset, image_name)
     if image is None:
         abort(400)
 
@@ -258,8 +258,8 @@ def viewer():
                            viewer_mode='viewer',
                            dataset=dataset,
                            image=image,
-                           image_count=image_count,
-                           image_index=image_index,
+                           image_count=0,
+                           image_index=0,
                            slice_counts=slice_counts,
                            image_max=max_value)
 
