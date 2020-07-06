@@ -5,8 +5,10 @@
         <a href="{{ url_for('dataset_list') }}" class="text-m text-link text-orange">Back to Datasets</a>
         <div class="text-header">{{ dataset.name }}</div>
         <div class="dataset-sessions card">
-            <div class="text-l">Sessions</div>
-            <br>
+            <div class="dataset-sessions-card-header">
+                <span class="text-l">Sessions</span>
+                <a class="text-m link-button orange" href="{{ url_for('import_session', dataset_name=dataset.name) }}">Import Session</a>
+            </div>
             <div>
             {% set session_names = ['Image (Categorical)', 'Slice (Categorical)', 'Slice (Comparison)'] %}
             {% set create_routes = ['create_categorical_session', 'create_categorical_slice_session', 'create_comparison_session'] %}

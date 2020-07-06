@@ -9,7 +9,7 @@ import labels
 import sampling
 import sessions
 from forms import CreateCategoricalSessionForm, CreateComparisonSessionForm, ComparisonNumberRange, \
-    CreateCategoricalSliceSessionForm
+    CreateCategoricalSliceSessionForm, ImportSessionForm
 from model import db, LabelSession
 from sessions import LabelSessionType
 
@@ -141,6 +141,26 @@ def session_overview(session_id: int):
                                label_session=label_session,
                                dataset=dataset,
                                resume_point=resume_point)
+
+
+@application.route('/import-session/<string:dataset_name>', methods=['GET', 'POST'])
+def import_session(dataset_name: str):
+    dataset = backend.get_dataset(dataset_name)
+    if dataset is None:
+        abort(400)
+
+    form = ImportSessionForm(meta={'csrf': False})
+
+    if form.validate_on_submit():
+        sessions.import_session(db.session, dataset, form.session_name.data, form.session_file.data)
+        return redirect(url_for('dataset_overview', dataset_name=dataset.name))
+
+    label_session_count = len(sessions.get_sessions(db.session, dataset))
+
+    return render_template('import_session.html',
+                           dataset=dataset,
+                           form=form,
+                           label_session_count=label_session_count)
 
 
 @application.route('/create-categorical-session/<string:dataset_name>', methods=['GET', 'POST'])

@@ -251,6 +251,15 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 20px;
 }
 
+.dataset-sessions-card-header {
+    margin-bottom: 10px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
 .dataset-sessions-header {
     margin-bottom: 10px;
 }

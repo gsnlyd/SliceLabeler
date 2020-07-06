@@ -2,7 +2,7 @@
 {% block session_content %}
     <div class="text-s text-gray">{{ ', '.join(label_session.label_values()) }}</div>
     {% if resume_point is not none %}
-        <a href="{{ url_for('label', label_session=label_session.id, i=resume_point) }}" class="session-resume-button link-button orange text-m">{{ 'Start Labeling' if resume_point == 0 else 'Resume Labeling' }}</a>
+        <a href="{{ url_for('label_categorical_slice', label_session=label_session.id, i=resume_point) }}" class="session-resume-button link-button orange text-m">{{ 'Start Labeling' if resume_point == 0 else 'Resume Labeling' }}</a>
     {% endif %}
     <div class="session-content card">
         <div class="text-xl">Slices</div>

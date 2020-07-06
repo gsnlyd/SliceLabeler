@@ -2,12 +2,13 @@ import json
 from datetime import datetime
 from enum import Enum, auto
 from io import BytesIO, StringIO
-from typing import List, Tuple, Optional, Dict
+from typing import List, Tuple, Optional
 
 from sqlalchemy.orm import Session
+from werkzeug.datastructures import FileStorage
 
 import backend
-from backend import Dataset, ImageSlice
+from backend import SliceType, Dataset, ImageSlice
 from model import LabelSession, SessionElement
 
 
@@ -134,7 +135,7 @@ def export_session(label_session: LabelSession) -> BytesIO:
         elements_rows.append(','.join((
             conv_str(el.element_index),
             conv_str(el.image_1_name), conv_str(el.slice_1_type), conv_str(el.slice_1_index),
-            conv_str(el.image_2_name), conv_str(el.slice_2_type), conv_str(el.slice_2_index),
+            conv_str(el.image_2_name), conv_str(el.slice_2_type), conv_str(el.slice_2_index)
         )))
 
     session_json['elements'] = elements_rows
@@ -149,3 +150,55 @@ def export_session(label_session: LabelSession) -> BytesIO:
     sio.close()
 
     return bio
+
+
+def import_session(session: Session, dataset: Dataset, name: str, session_file: FileStorage):
+    session_json = json.load(session_file.stream)
+    print(session_json)
+
+    session_type = LabelSessionType[session_json['session_type']]
+    prompt = session_json['prompt']
+    label_values_str = session_json['label_values_str']
+
+    assert type(prompt) is str
+    assert type(label_values_str) is str
+
+    label_session = LabelSession(
+        dataset=dataset.name,
+        session_name=name,
+        session_type=session_type.name,
+        prompt=prompt,
+        date_created=datetime.now(),
+        label_values_str=label_values_str,
+        element_count=len(session_json['elements'])
+    )
+
+    session.add(label_session)
+
+    for el_index, el_str in enumerate(session_json['elements']):
+        el_split = el_str.split(',')
+        image_1_name = None if el_split[1] == 'None' else el_split[1]
+        slice_1_type = None if el_split[2] == 'None' else SliceType[el_split[2]].name
+        slice_1_index = None if el_split[3] == 'None' else int(el_split[3])
+
+        image_2_name = None if el_split[4] == 'None' else el_split[4]
+        slice_2_type = None if el_split[5] == 'None' else SliceType[el_split[5]].name
+        slice_2_index = None if el_split[6] == 'None' else int(el_split[6])
+
+        assert type(image_1_name) is str
+        assert image_2_name is None or type(image_2_name) is str
+
+        el = SessionElement(
+            element_index=el_index,
+            image_1_name=image_1_name,
+            slice_1_index=slice_1_index,
+            slice_1_type=slice_1_type,
+            image_2_name=image_2_name,
+            slice_2_index=slice_2_index,
+            slice_2_type=slice_2_type,
+            session=label_session
+        )
+
+        session.add(el)
+
+    session.commit()

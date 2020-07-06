@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired
 from wtforms import StringField, SubmitField, SelectField, IntegerField, BooleanField
 from wtforms.validators import Length, NumberRange
 
@@ -71,3 +72,11 @@ class CreateComparisonSessionForm(FlaskForm):
                                      render_kw={'placeholder': 100,
                                                 'value': 100})
     submit_button = SubmitField('Create')
+
+
+class ImportSessionForm(FlaskForm):
+    session_name = StringField('Session Name',
+                               validators=[Length(3, 100, LENGTH_MESSAGE)],
+                               render_kw={'placeholder': 'My Session'})
+    session_file = FileField('Session File', validators=[FileRequired()])
+    submit_button = SubmitField('Import')
