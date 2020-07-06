@@ -58,16 +58,11 @@ def thumbnail(dataset_name: str, image_name: str):
 
 @application.route('/export-labels/<int:session_id>')
 def export_labels(session_id: int):
-    label_session = backend.get_label_session_by_id(db.session, session_id)
+    label_session = sessions.get_session_by_id(db.session, session_id)
     if label_session is None:
         abort(400)
 
-    labels_str = backend.export_labels(db.session, label_session)
-    labels_bytes = BytesIO()
-    labels_bytes.write(labels_str.getvalue().encode('utf-8'))
-
-    labels_bytes.seek(0)
-    labels_str.close()
+    labels_bytes = labels.export_labels(label_session)
 
     return send_file(labels_bytes,
                      mimetype='text/csv',
