@@ -1,5 +1,5 @@
 import random
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import nibabel
 
@@ -50,18 +50,32 @@ def sample_slices(dataset: Dataset, slice_type: SliceType, image_count: int, sli
             sl = random.randrange(slice_min, slice_max)
         slices.append(ImageSlice(im.name, sl, slice_type))
 
+    slices = list(set(slices))  # Remove duplicates
     return slices
 
 
-def sample_comparisons(slices: List[ImageSlice], comparison_count: int) -> List[Tuple[ImageSlice, ImageSlice]]:
+def sample_comparisons(slices: List[ImageSlice], comparison_count: int,
+                       max_comparisons_per_slice: Optional[int]) -> List[Tuple[ImageSlice, ImageSlice]]:
+    slices = slices.copy()  # Avoid modifying original list
+
+    slice_comparison_counts = {sl: 0 for sl in slices}
     comparisons: List[Tuple[ImageSlice, ImageSlice]] = []
 
-    for i in range(comparison_count):
+    def random_slice() -> ImageSlice:
         sl = random.choice(slices)
-        other_sl = random.choice(slices)
+        slice_comparison_counts[sl] += 1
+        if max_comparisons_per_slice is not None and slice_comparison_counts[sl] >= max_comparisons_per_slice:
+            slices.remove(sl)
+            assert len(slices) > 0
+
+        return sl
+
+    for i in range(comparison_count):
+        sl = random_slice()
+        other_sl = random_slice()
 
         while other_sl == sl:  # Prevent comparison with self
-            other_sl = random.choice(slices)
+            other_sl = random_slice()
 
         comparisons.append((sl, other_sl))
 

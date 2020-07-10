@@ -42,6 +42,11 @@
                         {{ form_components.label_and_errors(form.comparison_count) }}
                         {{ form.comparison_count(class_='form-input text-m') }}
                     </div>
+                    <div class="form-group form-group-md">
+                        {{ form_components.label_and_errors(form.max_comparisons_per_slice) }}
+                        {{ form.max_comparisons_per_slice(class_='form-input text-m') }}
+                        <span class="text-xs text-gray">Leave blank for unlimited.</span>
+                    </div>
                     <div class="form-line form-group-md">
                         <div class="form-group form-group-flex">
                             {{ form_components.label_and_errors(form.min_slice_percent) }}

@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
 from wtforms import StringField, SubmitField, SelectField, IntegerField, BooleanField
-from wtforms.validators import Length, NumberRange
+from wtforms.validators import Length, NumberRange, Optional
 
 LENGTH_MESSAGE = 'Length must be between %(min)d and %(max)d.'
 
@@ -63,6 +63,11 @@ class CreateComparisonSessionForm(FlaskForm):
     comparison_count = IntegerField('Number of Comparisons', validators=[ComparisonNumberRange(min=1)],
                                     render_kw={'placeholder': 2000,
                                                'value': 2000})
+
+    max_comparisons_per_slice = IntegerField('Max Comparisons per Slice',
+                                             validators=[Optional(), ComparisonNumberRange(min=1)],
+                                             render_kw={'placeholder': 5,
+                                                        'value': 5})
 
     min_slice_percent = IntegerField('Min Slice (%)', validators=[ComparisonNumberRange(min=0, max=99)],
                                      render_kw={'placeholder': 0,
