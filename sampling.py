@@ -61,8 +61,12 @@ def sample_comparisons(slices: List[ImageSlice], comparison_count: int,
     slice_comparison_counts = {sl: 0 for sl in slices}
     comparisons: List[Tuple[ImageSlice, ImageSlice]] = []
 
-    def random_slice() -> ImageSlice:
+    def random_slice(avoid: ImageSlice = None) -> ImageSlice:
         sl = random.choice(slices)
+        if avoid is not None:
+            while sl == avoid:
+                sl = random.choice(slices)
+
         slice_comparison_counts[sl] += 1
         if max_comparisons_per_slice is not None and slice_comparison_counts[sl] >= max_comparisons_per_slice:
             slices.remove(sl)
@@ -72,10 +76,7 @@ def sample_comparisons(slices: List[ImageSlice], comparison_count: int,
 
     for i in range(comparison_count):
         sl = random_slice()
-        other_sl = random_slice()
-
-        while other_sl == sl:  # Prevent comparison with self
-            other_sl = random_slice()
+        other_sl = random_slice(avoid=sl)  # Prevent comparison with self
 
         comparisons.append((sl, other_sl))
 
