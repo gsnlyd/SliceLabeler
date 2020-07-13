@@ -6,13 +6,20 @@ import nibabel
 import backend
 from backend import Dataset, DataImage, ImageSlice, SliceType
 from model import LabelSession
+from sessions import LabelSessionType
 
 
 def get_slices_from_session(label_session: LabelSession) -> List[ImageSlice]:
-    comparisons = get_comparisons_from_session(label_session)
-    slices = [co[0] for co in comparisons] + [co[1] for co in comparisons]
-    slices = set(slices)
-    slices = sorted(slices, key=lambda sl: sl.image_name + sl.slice_type.name + str(sl.slice_index))
+    if label_session.session_type == LabelSessionType.CATEGORICAL_SLICE.name:
+        slices = [ImageSlice(el.image_1_name, el.slice_1_index,
+                             SliceType[el.slice_1_type]) for el in label_session.elements]
+    elif label_session.session_type == LabelSessionType.COMPARISON_SLICE.name:
+        comparisons = get_comparisons_from_session(label_session)
+        slices = [co[0] for co in comparisons] + [co[1] for co in comparisons]
+        slices = set(slices)
+        slices = sorted(slices, key=lambda sl: sl.image_name + sl.slice_type.name + str(sl.slice_index))
+    else:
+        assert False, 'Invalid session type {}'.format(label_session.session_type)
 
     return slices
 

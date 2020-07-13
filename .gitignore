@@ -3,7 +3,7 @@ data/
 static/slices/
 db/
 exported_labels/
-comparison_lists/
+exported_slices/
 
 # Python
 venv/
