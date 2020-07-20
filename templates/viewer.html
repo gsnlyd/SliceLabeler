@@ -5,7 +5,7 @@
         <div class="viewer-container card">
             {% if viewer_mode == 'label' %}
             <div class="text-m">
-                <a href="{{ url_for('session_overview', session_id=label_session_id) }}" class="viewer-session-link text-link text-orange">Back to {{ label_session.session_name }}</a>
+                <a href="{{ url_for('session_overview', session_id=label_session.id) }}" class="viewer-session-link text-link text-orange">Back to {{ label_session.session_name }}</a>
             </div>
             {% endif %}
             <div class="viewer-title text-m">
