@@ -12,10 +12,10 @@ class CreateCategoricalSessionForm(FlaskForm):
                                render_kw={'placeholder': 'My Session'})
     prompt = StringField('Label Prompt',
                          validators=[Length(0, 100, LENGTH_MESSAGE)],
-                         render_kw={'placeholder': 'What do you think of this image?'})
+                         render_kw={'placeholder': 'What is the level of artifacting in this image?'})
     label_values = StringField('Label Options',
                                validators=[Length(1, 100, LENGTH_MESSAGE)],
-                               render_kw={'placeholder': 'Amazing, Unremarkable, Boring'})
+                               render_kw={'placeholder': 'None, Mild, Moderate, Severe'})
     submit_button = SubmitField('Create')
 
 
@@ -25,10 +25,10 @@ class CreateCategoricalSliceSessionForm(FlaskForm):
                                render_kw={'placeholder': 'My Session'})
     prompt = StringField('Label Prompt',
                          validators=[Length(0, 100, LENGTH_MESSAGE)],
-                         render_kw={'placeholder': 'What do you think of this image?'})
+                         render_kw={'placeholder': 'What is the level of artifacting in this slice?'})
     label_values = StringField('Label Options',
                                validators=[Length(1, 100, LENGTH_MESSAGE)],
-                               render_kw={'placeholder': 'Amazing, Unremarkable, Boring'})
+                               render_kw={'placeholder': 'None, Mild, Moderate, Severe'})
     comparisons = SelectField('Use Slices From', choices=[])
     submit_button = SubmitField('Create')
 
@@ -49,10 +49,11 @@ class CreateComparisonSessionForm(FlaskForm):
                                render_kw={'placeholder': 'My Session'})
     prompt = StringField('Label Prompt',
                          validators=[Length(0, 100, LENGTH_MESSAGE)],
-                         render_kw={'placeholder': 'Which image is your favorite?'})
-    label_values = StringField('Label Options',
+                         render_kw={'placeholder': 'Which slice has more severe artifacts?'})
+    label_values = StringField('Additional Label Options',
                                validators=[Length(0, 100, LENGTH_MESSAGE)],
-                               render_kw={'placeholder': 'Amazing, Unremarkable, Boring'})
+                               render_kw={'placeholder': 'No Difference, Not Sure',
+                                          'value': 'No Difference, Not Sure'})
     comparisons = SelectField('Comparisons', choices=[('create', 'Create New')])
     slice_type = SelectField('Orientation', choices=[('SAGITTAL', 'Sagittal'),
                                                      ('CORONAL', 'Coronal'),
@@ -69,8 +70,7 @@ class CreateComparisonSessionForm(FlaskForm):
 
     max_comparisons_per_slice = IntegerField('Max Comparisons per Slice',
                                              validators=[Optional(), ComparisonNumberRange(min=1)],
-                                             render_kw={'placeholder': 5,
-                                                        'value': 5})
+                                             render_kw={'placeholder': 5})
 
     min_slice_percent = IntegerField('Min Slice (%)', validators=[ComparisonNumberRange(min=0, max=99)],
                                      render_kw={'placeholder': 0,
