@@ -1,75 +1,66 @@
-{% extends 'base.html' %}
-{% import 'form_components.html' as form_components %}
+{% extends 'create_form_base.html' %}
 {% block title %}{{ dataset.name }}: New Comparison Session{% endblock %}
-{% block body %}
-    <div class="main-container-800 container-offset">
-        <div class="create-form-container card">
-            <div class="text-l">
-                <span class="">Create comparison session for</span>
-                <span class="weight-medium">{{ dataset.name }}</span>
-            </div>
-            <form class="form" method="POST">
-                <div class="form-section">
-                    <div class="form-group form-group-md">
-                        {{ form_components.label_and_errors(form.session_name) }}
-                        {{ form.session_name(class_='form-field form-input text-m') }}
-                    </div>
-                    <div class="form-group form-group-lg">
-                        {{ form_components.label_and_errors(form.prompt) }}
-                        {{ form.prompt(class_='form-field form-input text-m') }}
-                    </div>
-                </div>
-                <div class="form-section">
-                    <div class="form-group form-group-md">
-                        {{ form_components.label_and_errors(form.comparisons) }}
-                        {{ form.comparisons(class_='form-select text-m') }}
-                    </div>
-                </div>
-                <div class="form-section form-section-border" id="comparison-list-field-container">
-                    <div class="form-group form-group-md">
-                        {{ form_components.label_and_errors(form.slice_type) }}
-                        {{ form.slice_type(class_='form-select text-m') }}
-                    </div>
-                    <div class="form-group form-group-md">
-                        {{ form_components.label_and_errors(form.image_count) }}
-                        {{ form.image_count(class_='form-input text-m', value=total_image_count, placeholder=total_image_count) }}
-                    </div>
-                    <div class="form-group form-group-md">
-                        {{ form_components.label_and_errors(form.slice_count) }}
-                        {{ form.slice_count(class_='form-input text-m') }}
-                    </div>
-                    <div class="form-group form-group-md">
-                        {{ form_components.label_and_errors(form.comparison_count) }}
-                        {{ form.comparison_count(class_='form-input text-m') }}
-                    </div>
-                    <div class="form-group form-group-md">
-                        {{ form_components.label_and_errors(form.max_comparisons_per_slice) }}
-                        {{ form.max_comparisons_per_slice(class_='form-input text-m') }}
-                        <span class="text-xs text-gray">Leave blank for unlimited.</span>
-                    </div>
-                    <div class="form-line form-group-md">
-                        <div class="form-group form-group-flex">
-                            {{ form_components.label_and_errors(form.min_slice_percent) }}
-                            {{ form.min_slice_percent(class_='form-input text-m') }}
-                        </div>
-                        <div class="form-group form-group-flex">
-                            {{ form_components.label_and_errors(form.max_slice_percent) }}
-                            {{ form.max_slice_percent(class_='form-input text-m') }}
-                        </div>
-                    </div>
-                </div>
-                <div class="form-section form-section-submit">
-                    {{ form.submit_button(class_='text-m submit-button') }}
-                </div>
-            </form>
-        </div>
+{% block form_body %}
+    <div class="text-l">
+        <span class="">Create comparison session for</span>
+        <span class="weight-medium">{{ dataset.name }}</span>
     </div>
-    <script>
-        const sessionNameInput = document.getElementById('session_name');
-        sessionNameInput.value = '{{ 'Session ' + (label_session_count + 1)|string }}'
-        sessionNameInput.focus();
-        sessionNameInput.select();
-    </script>
+    <form class="form" method="POST">
+        <div class="form-section">
+            <div class="form-group form-group-md">
+                {{ form_components.label_and_errors(form.session_name) }}
+                {{ form.session_name(class_='form-field form-input text-m') }}
+            </div>
+            <div class="form-group form-group-lg">
+                {{ form_components.label_and_errors(form.prompt) }}
+                {{ form.prompt(class_='form-field form-input text-m') }}
+            </div>
+        </div>
+        <div class="form-section">
+            <div class="form-group form-group-md">
+                {{ form_components.label_and_errors(form.comparisons) }}
+                {{ form.comparisons(class_='form-select text-m') }}
+            </div>
+        </div>
+        <div class="form-section form-section-border" id="comparison-list-field-container">
+            <div class="form-group form-group-md">
+                {{ form_components.label_and_errors(form.slice_type) }}
+                {{ form.slice_type(class_='form-select text-m') }}
+            </div>
+            <div class="form-group form-group-md">
+                {{ form_components.label_and_errors(form.image_count) }}
+                {{ form.image_count(class_='form-input text-m', value=total_image_count, placeholder=total_image_count) }}
+            </div>
+            <div class="form-group form-group-md">
+                {{ form_components.label_and_errors(form.slice_count) }}
+                {{ form.slice_count(class_='form-input text-m') }}
+            </div>
+            <div class="form-group form-group-md">
+                {{ form_components.label_and_errors(form.comparison_count) }}
+                {{ form.comparison_count(class_='form-input text-m') }}
+            </div>
+            <div class="form-group form-group-md">
+                {{ form_components.label_and_errors(form.max_comparisons_per_slice) }}
+                {{ form.max_comparisons_per_slice(class_='form-input text-m') }}
+                <span class="text-xs text-gray">Leave blank for unlimited.</span>
+            </div>
+            <div class="form-line form-group-md">
+                <div class="form-group form-group-flex">
+                    {{ form_components.label_and_errors(form.min_slice_percent) }}
+                    {{ form.min_slice_percent(class_='form-input text-m') }}
+                </div>
+                <div class="form-group form-group-flex">
+                    {{ form_components.label_and_errors(form.max_slice_percent) }}
+                    {{ form.max_slice_percent(class_='form-input text-m') }}
+                </div>
+            </div>
+        </div>
+        <div class="form-section form-section-submit">
+            {{ form.submit_button(class_='text-m submit-button') }}
+        </div>
+    </form>
+{% endblock %}
+{% block form_scripts %}
     <script>
         const comparisonSelect = document.getElementById('comparisons')
         const comparisonListContainer = document.getElementById('comparison-list-field-container');

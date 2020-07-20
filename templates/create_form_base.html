@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% import 'form_components.html' as form_components %}
+{% block body %}
+    <div class="main-container-800 container-offset">
+        <div class="card create-form-container">
+            {% block form_body %}
+            {% endblock %}
+        </div>
+    </div>
+    <script>
+        const sessionNameInput = document.getElementById('session_name');
+        sessionNameInput.value = '{{ 'Session ' + (label_session_count + 1)|string }}'
+        sessionNameInput.focus();
+        sessionNameInput.select();
+    </script>
+    {% block form_scripts %}
+    {% endblock %}
+{% endblock %}

@@ -1,45 +1,35 @@
-{% extends 'base.html' %}
-{% import 'form_components.html' as form_components %}
+{% extends 'create_form_base.html' %}
 {% block title %}{{ dataset.name }}: New Categorical Session{% endblock %}
-{% block body %}
-    <div class="main-container-800 container-offset">
-        <div class="card create-form-container">
-            <div class="text-l">
-                <span class="">Create categorical slice session for</span>
-                <span class="weight-medium">{{ dataset.name }}</span>
-            </div>
-            <form class="form" method="POST">
-                <div class="form-section">
-                    <div class="form-group form-group-md">
-                        {{ form_components.label_and_errors(form.session_name) }}
-                        {{ form.session_name(class_='form-field form-input text-m') }}
-                    </div>
-                </div>
-                <div class="form-section">
-                    <div class="form-group form-group-lg">
-                        {{ form_components.label_and_errors(form.prompt) }}
-                        {{ form.prompt(class_='form-field form-input text-m') }}
-                    </div>
-                    <div class="form-group form-group-lg">
-                        {{ form_components.label_and_errors(form.label_values) }}
-                        {{ form.label_values(class_='form-field form-input text-m') }}
-                    </div>
-                </div>
-                <div class="form-section">
-                    <div class="form-group form-group-md">
-                        {{ form_components.label_and_errors(form.comparisons) }}
-                        {{ form.comparisons(class_='form-select text-m') }}
-                    </div>
-                <div class="form-section form-section-submit">
-                    {{ form.submit_button(class_='text-m submit-button') }}
-                </div>
-            </form>
-        </div>
+{% block form_body %}
+    <div class="text-l">
+        <span class="">Create categorical slice session for</span>
+        <span class="weight-medium">{{ dataset.name }}</span>
     </div>
-    <script>
-        const sessionNameInput = document.getElementById('session_name');
-        sessionNameInput.value = '{{ 'Session ' + (label_session_count + 1)|string }}'
-        sessionNameInput.focus();
-        sessionNameInput.select();
-    </script>
+    <form class="form" method="POST">
+        <div class="form-section">
+            <div class="form-group form-group-md">
+                {{ form_components.label_and_errors(form.session_name) }}
+                {{ form.session_name(class_='form-field form-input text-m') }}
+            </div>
+        </div>
+        <div class="form-section">
+            <div class="form-group form-group-lg">
+                {{ form_components.label_and_errors(form.prompt) }}
+                {{ form.prompt(class_='form-field form-input text-m') }}
+            </div>
+            <div class="form-group form-group-lg">
+                {{ form_components.label_and_errors(form.label_values) }}
+                {{ form.label_values(class_='form-field form-input text-m') }}
+            </div>
+        </div>
+        <div class="form-section">
+            <div class="form-group form-group-md">
+                {{ form_components.label_and_errors(form.comparisons) }}
+                {{ form.comparisons(class_='form-select text-m') }}
+            </div>
+        </div>
+        <div class="form-section form-section-submit">
+            {{ form.submit_button(class_='text-m submit-button') }}
+        </div>
+    </form>
 {% endblock %}
