@@ -20,11 +20,11 @@
             <div class="compare-slice-controls">
                 <div>
                     <label for="intensity-min-1" class="text-xs text-gray viewer-input-label">Min</label>
-                    <input id="intensity-min-1" type="number" class="text-m viewer-number-input" size="5" value="0">
+                    <input id="intensity-min-1" type="number" class="intensity-control-min text-m viewer-number-input" size="5" value="0" data-for-slice="slice-1">
                 </div>
                 <div>
                     <label for="intensity-max-1" class="text-xs text-gray viewer-input-label">Max</label>
-                    <input id="intensity-max-1" type="number" class="text-m viewer-number-input" value="{{ image_1_max }}">
+                    <input id="intensity-max-1" type="number" class="intensity-control-max text-m viewer-number-input" value="{{ image_1_max }}" data-for-slice="slice-1">
                 </div>
                 <div>
                     <h3 class="text-m keymap-header">Keymap</h3>
@@ -70,22 +70,22 @@
             </div>
             <div class="compare-slices">
                 <div class="compare-slice-container">
-                    <img class="label-control compare-slice {% if current_label_value == 'First' %}selected{% endif %}" id="slice-1" data-control-index="0" data-element-id="{{ element_id }}" data-label-value="First">
+                    <img class="slice-img label-control compare-slice {% if current_label_value == 'First' %}selected{% endif %}" id="slice-1" data-control-index="0" data-element-id="{{ element_id }}" data-label-value="First" data-dataset-name="{{ dataset.name }}" data-image-name="{{ slice_1.image_name }}" data-slice-index="{{ slice_1.slice_index }}" data-slice-type="{{ slice_1.slice_type.name }}" data-intensity-min="0" data-intensity-max="{{ image_1_max }}">
                     <div class="compare-slice-help text-m text-gray">Click or press "1" to select</div>
                 </div>
                 <div class="compare-slice-container">
-                    <img class="label-control compare-slice {% if current_label_value == 'Second' %}selected{% endif %}" id="slice-2" data-control-index="1" data-element-id="{{ element_id }}" data-label-value="Second">
+                    <img class="slice-img label-control compare-slice {% if current_label_value == 'Second' %}selected{% endif %}" id="slice-2" data-control-index="1" data-element-id="{{ element_id }}" data-label-value="Second" data-dataset-name="{{ dataset.name }}" data-image-name="{{ slice_2.image_name }}" data-slice-index="{{ slice_2.slice_index }}" data-slice-type="{{ slice_2.slice_type.name }}" data-intensity-min="0" data-intensity-max="{{ image_2_max }}">
                     <div class="compare-slice-help text-m text-gray">Click or press "2" to select</div>
                 </div>
             </div>
             <div class="compare-slice-controls">
                 <div>
                     <label for="intensity-min-2" class="text-xs text-gray viewer-input-label">Min</label>
-                    <input id="intensity-min-2" type="number" class="text-m viewer-number-input" size="5" value="0">
+                    <input id="intensity-min-2" type="number" class="intensity-control-min text-m viewer-number-input" size="5" value="0" data-for-slice="slice-2">
                 </div>
                 <div>
                     <label for="intensity-max-2" class="text-xs text-gray viewer-input-label">Max</label>
-                    <input id="intensity-max-2" type="number" class="text-m viewer-number-input" value="{{ image_1_max }}">
+                    <input id="intensity-max-2" type="number" class="intensity-control-max text-m viewer-number-input" value="{{ image_1_max }}" data-for-slice="slice-2">
                 </div>
                 <div class="compare-label-controls">
                     <div class="text-s text-gray">Other Labels</div>
@@ -110,5 +110,4 @@
     </script>
     <script type="text/javascript" src="/static/js/paginate.js"></script>
     <script type="text/javascript" src="/static/js/label.js"></script>
-    <script type="text/javascript" src="/static/js/compare.js"></script>
 {% endblock %}
