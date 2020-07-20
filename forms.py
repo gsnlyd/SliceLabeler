@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
-from wtforms import StringField, SubmitField, SelectField, IntegerField, BooleanField
+from wtforms import StringField, SubmitField, SelectField, IntegerField
 from wtforms.validators import Length, NumberRange, Optional
 
 LENGTH_MESSAGE = 'Length must be between %(min)d and %(max)d.'

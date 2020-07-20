@@ -15,7 +15,10 @@ from sessions import LabelSessionType
 
 application = Flask(__name__)
 
-application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/label_database.db'
+DB_DIR_PATH = 'db'
+DB_FILE_NAME = 'label_database.db'
+
+application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(DB_DIR_PATH, DB_FILE_NAME)
 application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(application)
 
