@@ -18,15 +18,15 @@
             <div class="cat-slice-controls">
                 <div>
                     <label for="intensity-min" class="text-xs text-gray viewer-input-label">Min</label>
-                    <input id="intensity-min" type="number" class="text-m viewer-number-input" size="5" value="0">
+                    <input id="intensity-min" type="number" class="intensity-control-min text-m viewer-number-input" value="0" data-for-slice="slice-img">
                 </div>
                 <div>
                     <label for="intensity-max" class="text-xs text-gray viewer-input-label">Max</label>
-                    <input id="intensity-max" type="number" class="text-m viewer-number-input" value="{{ image_max }}">
+                    <input id="intensity-max" type="number" class="intensity-control-max text-m viewer-number-input" value="{{ image_max }}" data-for-slice="slice-img">
                 </div>
             </div>
             <div class="cat-slice-slice">
-                <img class="cat-slice-img" id="slice-img">
+                <img class="slice-img cat-slice-img" id="slice-img" data-dataset-name="{{ dataset.name }}" data-image-name="{{ image_slice.image_name }}" data-slice-index="{{ image_slice.slice_index }}" data-slice-type="{{ image_slice.slice_type.name }}" data-intensity-min="0" data-intensity-max="{{ image_max }}">
             </div>
             <div class="cat-slice-label-controls">
             {% for lv in label_session.label_values() %}
@@ -44,5 +44,4 @@
     </script>
     <script type="text/javascript" src="/static/js/paginate.js"></script>
     <script type="text/javascript" src="/static/js/label.js"></script>
-    <script type="text/javascript" src="/static/js/categorical_slice.js"></script>
 {% endblock %}
