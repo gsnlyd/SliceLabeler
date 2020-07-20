@@ -15,6 +15,10 @@
                 {{ form_components.label_and_errors(form.prompt) }}
                 {{ form.prompt(class_='form-field form-input text-m') }}
             </div>
+            <div class="form-group form-group-lg">
+                {{ form_components.label_and_errors(form.label_values) }}
+                {{ form.label_values(class_='form-field form-input text-m') }}
+            </div>
         </div>
         <div class="form-section">
             <div class="form-group form-group-md">

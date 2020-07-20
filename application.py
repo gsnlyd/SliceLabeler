@@ -262,7 +262,7 @@ def create_comparison_session(dataset_name: str):
             else:
                 from_session = sessions.get_session_by_id(db.session, int(form.comparisons.data))
                 comparisons = sampling.get_comparisons_from_session(from_session)
-            label_values = []  # TODO
+            label_values = [v.strip() for v in form.label_values.data.split(',')]
             sessions.create_comparison_slice_session(db.session, form.session_name.data, form.prompt.data,
                                                      dataset, label_values, comparisons)
             return redirect(url_for('dataset_overview', dataset_name=dataset.name))

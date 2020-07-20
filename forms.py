@@ -50,6 +50,9 @@ class CreateComparisonSessionForm(FlaskForm):
     prompt = StringField('Label Prompt',
                          validators=[Length(0, 100, LENGTH_MESSAGE)],
                          render_kw={'placeholder': 'Which image is your favorite?'})
+    label_values = StringField('Label Options',
+                               validators=[Length(0, 100, LENGTH_MESSAGE)],
+                               render_kw={'placeholder': 'Amazing, Unremarkable, Boring'})
     comparisons = SelectField('Comparisons', choices=[('create', 'Create New')])
     slice_type = SelectField('Orientation', choices=[('SAGITTAL', 'Sagittal'),
                                                      ('CORONAL', 'Coronal'),
