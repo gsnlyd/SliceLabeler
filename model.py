@@ -28,6 +28,8 @@ class LabelSession(db.Model):
     )
 
     def label_values(self) -> List[str]:
+        if self.label_values_str == '':
+            return []
         return self.label_values_str.split(',')
     
     

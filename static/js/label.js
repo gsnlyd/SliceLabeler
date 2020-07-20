@@ -57,9 +57,9 @@ document.addEventListener('keydown', ev => {
 
     // Label
     if (ev.code.startsWith('Digit')) {
-        const num = parseInt(ev.code.substring(5, 6)) - 1;
-        if (num in Object.keys(labelControls)) {
-            labelControls[num].click();
+        const numString = (parseInt(ev.code.substring(5, 6)) - 1).toString();
+        if (Object.keys(labelControls).includes(numString)) {
+            labelControls[numString].click();
         }
     }
 });

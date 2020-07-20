@@ -70,11 +70,11 @@
             </div>
             <div class="compare-slices">
                 <div class="compare-slice-container">
-                    <img class="compare-slice" id="slice-1">
+                    <img class="label-control compare-slice {% if current_label_value == 'First' %}selected{% endif %}" id="slice-1" data-control-index="0" data-element-id="{{ element_id }}" data-label-value="First">
                     <div class="compare-slice-help text-m text-gray">Click or press "1" to select</div>
                 </div>
                 <div class="compare-slice-container">
-                    <img class="compare-slice" id="slice-2">
+                    <img class="label-control compare-slice {% if current_label_value == 'Second' %}selected{% endif %}" id="slice-2" data-control-index="1" data-element-id="{{ element_id }}" data-label-value="Second">
                     <div class="compare-slice-help text-m text-gray">Click or press "2" to select</div>
                 </div>
             </div>
@@ -89,8 +89,10 @@
                 </div>
                 <div class="compare-label-controls">
                     <div class="text-s text-gray">Other Labels</div>
-                    <button class="compare-label-button button text-s" id="neither-button">Neither (3)</button>
-                    <button class="compare-label-button button text-s" id="not-sure-button">Not Sure (4)</button>
+                    {% for lv in label_session.label_values() %}
+                        {% set selected = (lv == current_label_value) %}
+                        <button class="label-control compare-label-button button text-s {% if selected %}selected{% endif %}" data-control-index="{{ 2 + loop.index0 }}" data-element-id="{{ element_id }}" data-label-value="{{ lv }}">{{ lv }} ({{ 2 + loop.index }})</button>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -105,8 +107,8 @@
         const sliceIndex2 = '{{ slice_2.slice_index }}';
         const sliceType1 = '{{ slice_1.slice_type.name }}';
         const sliceType2 = '{{ slice_2.slice_type.name }}';
-        {% if current_label_value is none %}const initialLabel = null;{% else %}const initialLabel = '{{ current_label_value }}';{% endif %}
     </script>
     <script type="text/javascript" src="/static/js/paginate.js"></script>
+    <script type="text/javascript" src="/static/js/label.js"></script>
     <script type="text/javascript" src="/static/js/compare.js"></script>
 {% endblock %}
