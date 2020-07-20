@@ -120,7 +120,7 @@
                 {% if viewer_mode == 'label' %}
                 {% for lv in label_session.label_values() %}
                     {% set selected = (lv == image_label_value) %}
-                    <button class="viewer-label-button text-m {% if selected %}selected{% endif %}" data-element-id="{{ element_id }}" data-label-value="{{ lv }}">{{ lv }} ({{ loop.index }})</button>
+                    <button class="label-control viewer-label-button text-m {% if selected %}selected{% endif %}" data-control-index="{{ loop.index0 }}" data-element-id="{{ element_id }}" data-label-value="{{ lv }}">{{ lv }} ({{ loop.index }})</button>
                 {% endfor %}
                 {% endif %}
                 </div>
@@ -137,6 +137,6 @@
     <script type="text/javascript" src="/static/js/viewer.js"></script>
     {% if viewer_mode == 'label' %}
     <script type="text/javascript" src="/static/js/paginate.js"></script>
-    <script type="text/javascript" src="/static/js/categorical.js"></script>
+    <script type="text/javascript" src="/static/js/label.js"></script>
     {% endif %}
 {% endblock %}
