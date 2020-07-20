@@ -63,6 +63,12 @@ function updateSlice(sliceEl) {
     sliceEl.src = '/thumb/' + datasetName + '/' + imageName + '?' + new URLSearchParams(queryParams).toString();
 }
 
+function setSliceOptions(sliceEl, sliceType, sliceIndex) {
+    sliceEl.dataset.sliceType = sliceType;
+    sliceEl.dataset.sliceIndex = sliceIndex.toString();
+    updateSlice(sliceEl);
+}
+
 function setSliceIntensity(sliceEl, intensityMin, intensityMax) {
     if (intensityMin !== null) {
         sliceEl.dataset.intensityMin = intensityMin;

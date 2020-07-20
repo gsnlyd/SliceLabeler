@@ -35,11 +35,11 @@
                     </select>
                     <div class="viewer-input-container">
                         <label for="intensity-min" class="text-xs text-gray viewer-input-label">Min</label>
-                        <input id="intensity-min" type="number" class="text-m viewer-number-input" size="5" value="0">
+                        <input id="intensity-min" type="number" class="intensity-control-min text-m viewer-number-input" size="5" value="0" data-for-slice="slice-main,slice-side-1,slice-side-2,slice-side-3">
                     </div>
                     <div class="viewer-input-container">
                         <label for="intensity-max" class="text-xs text-gray viewer-input-label">Max</label>
-                        <input id="intensity-max" type="number" class="text-m viewer-number-input" value="{{ image_max }}">
+                        <input id="intensity-max" type="number" class="intensity-control-max text-m viewer-number-input" value="{{ image_max }}" data-for-slice="slice-main,slice-side-1,slice-side-2,slice-side-3">
                     </div>
                     <div>
                         <h3 class="text-m keymap-header">Keymap</h3>
@@ -95,23 +95,23 @@
                 </div>
                 <div class="viewer-slices-container">
                     <div class="viewer-slice-box" id="viewer-slice-box-main">
-                        <img class="viewer-slice" id="slice-main">
+                        <img class="slice-img viewer-slice" id="slice-main" data-dataset-name="{{ dataset.name }}" data-image-name="{{ image.name }}" data-slice-index="{{ slice_counts[0] // 2 }}" data-slice-type="SAGITTAL" data-intensity-min="0" data-intensity-max="{{ image_max }}">
                     </div>
                     <div class="viewer-slice-box" id="viewer-slice-box-side-1">
                         <div class="viewer-slice-guide-container">
-                            <img class="viewer-slice" id="slice-side-1">
+                            <img class="slice-img viewer-slice" id="slice-side-1" data-dataset-name="{{ dataset.name }}" data-image-name="{{ image.name }}" data-slice-index="{{ slice_counts[0] // 2 }}" data-slice-type="SAGITTAL" data-intensity-min="0" data-intensity-max="{{ image_max }}">
                             <div class="viewer-slice-guide" id="slice-guide-1"></div>
                         </div>
                     </div>
                     <div class="viewer-slice-box" id="viewer-slice-box-side-2">
                         <div class="viewer-slice-guide-container">
-                            <img class="viewer-slice" id="slice-side-2">
+                            <img class="slice-img viewer-slice" id="slice-side-2" data-dataset-name="{{ dataset.name }}" data-image-name="{{ image.name }}" data-slice-index="{{ slice_counts[1] // 2 }}" data-slice-type="CORONAL" data-intensity-min="0" data-intensity-max="{{ image_max }}">
                             <div class="viewer-slice-guide" id="slice-guide-2"></div>
                         </div>
                     </div>
                     <div class="viewer-slice-box" id="viewer-slice-box-side-3">
                         <div class="viewer-slice-guide-container">
-                            <img class="viewer-slice" id="slice-side-3">
+                            <img class="slice-img viewer-slice" id="slice-side-3" data-dataset-name="{{ dataset.name }}" data-image-name="{{ image.name }}" data-slice-index="{{ slice_counts[2] // 2 }}" data-slice-type="AXIAL" data-intensity-min="0" data-intensity-max="{{ image_max }}">
                             <div class="viewer-slice-guide" id="slice-guide-3"></div>
                         </div>
                     </div>
@@ -134,9 +134,9 @@
 
         let sliceIndices = sliceCounts.map(c => Math.floor(c / 2));
     </script>
+    <script type="text/javascript" src="/static/js/label.js"></script>
     <script type="text/javascript" src="/static/js/viewer.js"></script>
     {% if viewer_mode == 'label' %}
     <script type="text/javascript" src="/static/js/paginate.js"></script>
-    <script type="text/javascript" src="/static/js/label.js"></script>
     {% endif %}
 {% endblock %}

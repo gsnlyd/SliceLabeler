@@ -18,18 +18,9 @@ const guideElements = [
     document.getElementById('slice-guide-3')
 ];
 
-const minIntensityEl = document.getElementById('intensity-min');
-const maxIntensityEl = document.getElementById('intensity-max');
 const currentSliceIndicator = document.getElementById('current-slice');
 
 // Viewer Functions
-
-function buildSliceURL(sliceType, sliceIndex) {
-    return '/thumb/' + datasetName + '/' + imageName + '?slice_index=' +
-        sliceIndex.toString() + '&slice_type=' + sliceType +
-        '&min=' + Math.floor(minIntensityEl.value) +
-        '&max=' + Math.floor(maxIntensityEl.value);
-}
 
 function updateSlices() {
     const curTypeIndex = sliceTypeSelect.selectedIndex;
@@ -48,7 +39,7 @@ function updateSlices() {
 
     for (let i = 0; i < sliceTypeNames.length; i++) {
         const el = sliceSideElements[i];
-        el.src = buildSliceURL(sliceTypeNames[i], sliceIndices[i]);
+        setSliceOptions(el, sliceTypeNames[i], sliceIndices[i]);
 
         if (i === curTypeIndex) {
             el.parentElement.parentElement.classList.add('selected');
@@ -72,7 +63,7 @@ function updateSlices() {
             el.parentElement.parentElement.classList.remove('selected');
         }
     }
-    sliceMainElement.src = buildSliceURL(sliceTypeNames[curTypeIndex], sliceIndices[curTypeIndex]);
+    setSliceOptions(sliceMainElement, sliceTypeNames[curTypeIndex], sliceIndices[curTypeIndex]);
 
     currentSliceIndicator.textContent = (sliceIndices[curTypeIndex] + 1).toString() + ' / ' + sliceCounts[curTypeIndex].toString();
 }
@@ -118,26 +109,12 @@ document.addEventListener('keydown', ev => {
         setSliceType(curTypeIndex + 1);
         ev.preventDefault();
     }
-    else if (ev.code === 'KeyE') {
-        maxIntensityEl.value = maxIntensityEl.value * 2;
-        updateSlices();
-    }
-    else if (ev.code === 'KeyR') {
-        maxIntensityEl.value = maxIntensityEl.value / 2;
-        updateSlices();
-    }
 });
 
 sliceTypeSelect.addEventListener('change', ev => {
     setSliceType(sliceTypeSelect.selectedIndex);
     updateSlices();
 });
-
-for (const intensityEl of [minIntensityEl, maxIntensityEl]) {
-    intensityEl.addEventListener('change', ev => {
-        updateSlices();
-    });
-}
 
 // Run on page load
 
