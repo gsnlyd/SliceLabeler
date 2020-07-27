@@ -20,6 +20,8 @@ h1, h2, h3, h4, h5, h6 {
     --background-c2: #1C1F28;
     --background-c3: #474F66;
 
+    --transparent-background-c3: rgba(71, 79, 102, 0.5);
+
     --color-dark-orange: #B24D2E;
     --color-light-orange: #FF6C3F;
     --color-transparent-orange: rgba(255, 108, 63, 0.5);
@@ -151,10 +153,11 @@ h1, h2, h3, h4, h5, h6 {
     background-color: var(--background-c3);
 }
 .link-button:hover {
-    filter: brightness(1.4);
+    filter: brightness(1.2);
 }
-.link-button:active {
-    transform: scale(0.95);
+.link-button:active, .link-button:focus {
+    outline: 0;
+    box-shadow: 0  0 0 4px var(--transparent-background-c3);
 }
 
 .link-button.text-xs {
@@ -171,11 +174,14 @@ h1, h2, h3, h4, h5, h6 {
     background-color: var(--color-dark-orange);
     color: var(--text-c1);
 }
+.link-button.orange:active, .link-button.orange:focus {
+    outline: 0;
+    box-shadow: 0  0 0 4px var(--color-transparent-orange);
+}
 
 
 .button {
-    width: 200px;
-    height: 60px;
+    padding: 10px 25px;
 
     appearance: none;
     -webkit-appearance: none;
@@ -190,14 +196,36 @@ h1, h2, h3, h4, h5, h6 {
     cursor: pointer;
 }
 .button:hover {
-    filter: brightness(1.4);
+    filter: brightness(1.2);
 }
-.button:active {
-    transform: scale(0.95);
+.button:active, .button:focus {
+    outline: 0;
+    box-shadow: 0  0 0 4px var(--transparent-background-c3);
 }
-.button.selected {
+
+.button.btn-fixed-m {
+    padding: 0 5px;
+    width: 140px;
+    height: 60px;
+}
+.button.btn-fixed-l {
+    padding: 0 5px;
+    width: 200px;
+    height: 60px;
+}
+
+.button.orange, .button.selected {
     background-color: var(--color-dark-orange);
 }
+.button.orange:active, .button.orange:focus, .button.selected:active, .button.selected:focus {
+    box-shadow: 0  0 0 4px var(--color-transparent-orange);
+}
+
+.button.spaced:not(:first-of-type) {
+    margin-top: 15px;
+}
+
+
 
 .card {
     background-color: var(--background-c2);
@@ -395,32 +423,6 @@ h1, h2, h3, h4, h5, h6 {
     outline: 0;
 }
 
-.submit-button {
-    padding: 10px 25px;
-
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-
-    border: 0;
-    background-color: var(--color-dark-orange);
-    border-radius: var(--b-radius);
-
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
-
-    cursor: pointer;
-}
-.submit-button:hover {
-    filter: brightness(1.2);
-}
-.submit-button:focus{
-    outline: 0;
-}
-.submit-button:active, .submit-button:focus {
-    box-shadow: 0  0 0 4px var(--color-transparent-orange);
-}
-
-
 
 .keymap-header {
     margin-top: 30px;
@@ -597,35 +599,6 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
 }
 
-.viewer-label-button {
-    width: 200px;
-    height: 60px;
-
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-
-    border: 0;
-    background-color: var(--background-c3);
-    border-radius: var(--b-radius);
-
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
-
-    cursor: pointer;
-}
-.viewer-label-button:not(:last-of-type) {
-    margin-bottom: 20px;
-}
-.viewer-label-button:hover {
-    filter: brightness(1.4);
-}
-.viewer-label-button:active {
-    transform: scale(0.95);
-}
-.viewer-label-button.selected {
-    background-color: var(--color-dark-orange);
-}
-
 .cat-slice-title {
     margin-left: 20px;
     margin-top: 5px;
@@ -706,17 +679,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .compare-label-controls {
     margin-top: 50px;
-}
-
-.compare-label-button {
-    width: 140px;
-    height: 50px;
-
-    display: block;
-    margin-top: 2px;
-}
-.compare-label-button:not(:first-of-type) {
-    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
 }
 
 .compare-slices {
