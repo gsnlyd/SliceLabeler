@@ -31,7 +31,7 @@
             <div class="cat-slice-label-controls">
             {% for lv in label_session.label_values() %}
                 {% set selected = (lv == slice_label_value) %}
-                <button class="label-control viewer-label-button text-m {% if selected %}selected{% endif %}" data-control-index="{{ loop.index0 }}" data-element-id="{{ element_id }}" data-label-value="{{ lv }}">{{ lv }} ({{ loop.index }})</button>
+                <button class="label-control button btn-fixed-l spaced text-m {% if selected %}selected{% endif %}" data-control-index="{{ loop.index0 }}" data-element-id="{{ element_id }}" data-label-value="{{ lv }}">{{ lv }} ({{ loop.index }})</button>
             {% endfor %}
             </div>
         </div>
