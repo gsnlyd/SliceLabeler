@@ -74,11 +74,11 @@ class CreateComparisonSessionForm(FlaskForm):
 
     min_slice_percent = IntegerField('Min Slice (%)', validators=[ComparisonNumberRange(min=0, max=99)],
                                      render_kw={'placeholder': 0,
-                                                'value': 0})
+                                                'value': 10})
 
     max_slice_percent = IntegerField('Max Slice (%)', validators=[ComparisonNumberRange(min=1, max=100)],
                                      render_kw={'placeholder': 100,
-                                                'value': 100})
+                                                'value': 90})
     submit_button = SubmitField('Create')
 
 
