@@ -4,6 +4,8 @@ import os
 import shutil
 from argparse import ArgumentParser
 
+import nibabel
+
 NIFTI_FILE_EXT = '.nii.gz'
 
 
@@ -12,6 +14,7 @@ def flatten_structure(dataset_path: str, output_path: str):
     print('Created {}'.format(output_path))
 
     image_count = 0
+    skip_count = 0
     for sess_dir_name in os.listdir(dataset_path):
         sess_dir_path = os.path.join(dataset_path, sess_dir_name)
         if not os.path.isdir(sess_dir_path):
@@ -27,6 +30,12 @@ def flatten_structure(dataset_path: str, output_path: str):
             image_paths = glob.glob(glob_path)
 
             for im_path in image_paths:
+                vol = nibabel.load(im_path)
+                if nibabel.aff2axcodes(vol.affine) != ('R', 'A', 'S'):
+                    print('Skipping', im_path)
+                    skip_count += 1
+                    continue
+
                 save_path = os.path.join(output_path, '{}_{}_{}'.format(sess_dir_name, anat_dir_name,
                                                                         os.path.basename(im_path)))
                 assert not os.path.exists(save_path), '{} already exists'.format(save_path)
@@ -34,7 +43,7 @@ def flatten_structure(dataset_path: str, output_path: str):
                 shutil.copyfile(im_path, save_path)
                 image_count += 1
 
-    print('Successfully saved {} images'.format(image_count))
+    print('Successfully saved {} images (skipped {} due to invalid orientation)'.format(image_count, skip_count))
 
 
 if __name__ == '__main__':
