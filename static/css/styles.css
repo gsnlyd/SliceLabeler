@@ -321,11 +321,15 @@ h1, h2, h3, h4, h5, h6 {
 .table td:not(:last-of-type), .table th:not(:last-of-type) {
     padding-right: 30px;
 }
+.table.right-pad {
+    padding-right: 15px;
+}
 
 
 
 .session-content {
     margin-top: 20px;
+    overflow-x: scroll;
 }
 
 .session-prompt {
