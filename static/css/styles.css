@@ -621,6 +621,14 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
 }
 
+.cat-slice-title-info {
+    margin-left: 10px;
+}
+
+.cat-slice-prompt {
+    margin-right: 15px;
+}
+
 .cat-slice-label-container {
     margin: 0 20px;
     display: flex;

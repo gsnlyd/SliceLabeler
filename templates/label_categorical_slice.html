@@ -9,8 +9,10 @@
         <div class="cat-slice-header">
             <div>
                 <a class="link-button text-s" href="{{ url_for('label_categorical_slice', label_session=label_session.id, i=previous_index) }}" id="previous-link">Prev</a>
+                <a href="{{ url_for('viewer', dataset=dataset.name, image=image_slice.image_name) }}" class="cat-slice-title-info text-link text-s text-gray">{{ dataset.name }} / {{ image_slice.image_name }} ({{ image_slice.slice_type.name.capitalize() }} #{{ image_slice.slice_index }})</a>
             </div>
             <div>
+                <span class="cat-slice-prompt text-m weight-medium">{{ label_session.prompt }}</span>
                 <a class="link-button text-s" href="{{ url_for('label_categorical_slice', label_session=label_session.id, i=next_index) }}" id="next-link">Next</a>
             </div>
         </div>
@@ -28,6 +30,35 @@
                 <div>
                     <div class="text-xs text-gray">Threshold Multiplier</div>
                     <div class="text-m weight-medium" id="multiplier-info"></div>
+                </div>
+                <div>
+                    <h3 class="text-m keymap-header">Keymap</h3>
+                    <table class="keymap-table">
+                        <tbody class="text-xs">
+                            <tr>
+                                <td>U</td>
+                                <td class="text-gray">Prev.</td>
+                            </tr>
+                            <tr>
+                                <td>Space</td>
+                                <td class="text-gray">Next</td>
+                            </tr>
+                            <tr><td class="keymap-space"></td></tr>
+                            <tr>
+                                <td>E</td>
+                                <td class="text-gray">-Brightness</td>
+                            </tr>
+                            <tr>
+                                <td>R</td>
+                                <td class="text-gray">+Brightness</td>
+                            </tr>
+                            <tr><td class="keymap-space"></td></tr>
+                            <tr>
+                                <td>1-9</td>
+                                <td class="text-gray">Label</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div class="cat-slice-slice">

@@ -10,7 +10,7 @@
                 <a class="text-m link-button orange" href="{{ url_for('import_session', dataset_name=dataset.name) }}">Import Session</a>
             </div>
             <div>
-            {% set session_names = ['Image (Categorical)', 'Slice (Categorical)', 'Slice (Comparison)'] %}
+            {% set session_names = ['Volume (Categorical)', 'Slice (Categorical)', 'Slice (Comparison)'] %}
             {% set create_routes = ['create_categorical_session', 'create_categorical_slice_session', 'create_comparison_session'] %}
             {% for sess_type, sessions in label_sessions.items() %}
                 <div class="dataset-sessions-header">
