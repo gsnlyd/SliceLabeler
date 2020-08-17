@@ -24,6 +24,11 @@
                     <label for="intensity-max" class="text-xs text-gray viewer-input-label">Max</label>
                     <input id="intensity-max" type="number" class="intensity-control-max text-m viewer-number-input" value="{{ image_max }}" data-for-slice="slice-img">
                 </div>
+                <br>
+                <div>
+                    <div class="text-xs text-gray">Threshold Multiplier</div>
+                    <div class="text-m weight-medium" id="multiplier-info"></div>
+                </div>
             </div>
             <div class="cat-slice-slice">
                 <img class="slice-img cat-slice-img" id="slice-img" data-dataset-name="{{ dataset.name }}" data-image-name="{{ image_slice.image_name }}" data-slice-index="{{ image_slice.slice_index }}" data-slice-type="{{ image_slice.slice_type.name }}" data-intensity-min="0" data-intensity-max="{{ image_max }}">

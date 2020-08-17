@@ -1,3 +1,19 @@
+// Cookies
+
+function getCookie(key) {
+    for (let c of document.cookie.split(';')) {
+        c = c.trim();
+        if (c.startsWith(key + '=')) {
+            return c.substr(key.length + 1);
+        }
+    }
+    return null
+}
+
+function setCookie(key, value, maxAge) {
+    document.cookie = key + '=' + value + ';path=/;max-age=' + maxAge.toString() + ';';
+}
+
 // Time Tracking
 
 let startTime = Date.now();
@@ -99,11 +115,54 @@ function updateMaxEl(intensityEl) {
     }
 }
 
+const INTENSITY_MULTIPLIER_KEY = 'intensityMultiplier';
+const INTENSITY_MULTIPLIER_MAX_AGE = 86400; // 1 day
+
+const multiplierInfoEl = document.getElementById('multiplier-info');
+
+function updateMultiplierInfo() {
+    multiplierInfoEl.textContent = 'x' + getCurMultiplier().toString();
+}
+
+function getCurMultiplier() {
+    const curMultiplier = getCookie(INTENSITY_MULTIPLIER_KEY);
+    if (curMultiplier === null) {
+        return 1;
+    }
+    return curMultiplier;
+}
+
+function initMultiplier() {
+    const curMultiplier = getCurMultiplier();
+    for (const maxEl of maxIntensityControls) {
+        maxEl.value = maxEl.value * curMultiplier;
+        updateMaxEl(maxEl);
+    }
+    updateMultiplierInfo();
+}
+
+function changeIntensityMultiplier(up) {
+    const curMultiplier = getCurMultiplier();
+    const changeMultiplier = up ? 2 : 0.5;
+    setCookie(INTENSITY_MULTIPLIER_KEY, curMultiplier * changeMultiplier, INTENSITY_MULTIPLIER_MAX_AGE);
+
+    for (const maxEl of maxIntensityControls) {
+        maxEl.value = maxEl.value * changeMultiplier;
+        updateMaxEl(maxEl);
+    }
+    updateMultiplierInfo();
+}
+
 // Event Listeners
 
 document.addEventListener('keydown', ev => {
     // Ignore within text input
     if (ev.target.nodeName === 'INPUT') {
+        return;
+    }
+
+    // Ignore keyboard commands
+    if (ev.getModifierState('Alt') || ev.getModifierState('Control') || ev.getModifierState('Meta')) {
         return;
     }
 
@@ -115,16 +174,10 @@ document.addEventListener('keydown', ev => {
         }
     }
     else if (ev.code === 'KeyE') {
-        for (const maxEl of maxIntensityControls) {
-            maxEl.value = maxEl.value * 2;
-            updateMaxEl(maxEl);
-        }
+        changeIntensityMultiplier(true);
     }
     else if (ev.code === 'KeyR') {
-        for (const maxEl of maxIntensityControls) {
-            maxEl.value = maxEl.value / 2;
-            updateMaxEl(maxEl);
-        }
+        changeIntensityMultiplier(false);
     }
 });
 
@@ -151,3 +204,5 @@ for (const intensityEl of maxIntensityControls) {
 for (const sliceEl of document.querySelectorAll('.slice-img')) {
     updateSlice(sliceEl);
 }
+
+initMultiplier();
