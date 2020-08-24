@@ -26,6 +26,20 @@ function resetTimeTaken() {
     startTime = Date.now();
 }
 
+const timerDisplayEl = document.getElementById('timer-display');
+const timerResetButton = document.getElementById('timer-reset');
+
+timerResetButton.addEventListener('click', ev => {
+    resetTimeTaken();
+});
+
+setInterval(() => {
+    const elapsedMs = getTimeTaken();
+    const elapsedMinutes = Math.floor(elapsedMs / (1000 * 60));
+    const elapsedSeconds = Math.floor((elapsedMs / 1000) % 60);
+    timerDisplayEl.textContent = elapsedMinutes.toString().padStart(2, '0') + ':' + elapsedSeconds.toString().padStart(2, '0');
+}, 100);
+
 // Constants
 
 let labelControls = {};

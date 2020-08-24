@@ -92,6 +92,10 @@
                     <label for="intensity-max-2" class="text-xs text-gray viewer-input-label">Max</label>
                     <input id="intensity-max-2" type="number" class="intensity-control-max text-m viewer-number-input" value="{{ image_1_max }}" data-for-slice="slice-2">
                 </div>
+                <div class="timer-container">
+                    <div class="text-m text-white" id="timer-display">00:00</div>
+                    <button class="timer-button button btn-s text-s" id="timer-reset">Reset</button>
+                </div>
                 <div class="compare-label-controls">
                     <div class="text-s text-gray">Other Labels</div>
                     {% for lv in label_session.label_values() %}

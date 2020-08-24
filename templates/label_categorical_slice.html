@@ -64,11 +64,18 @@
             <div class="cat-slice-slice">
                 <img class="slice-img cat-slice-img" id="slice-img" data-dataset-name="{{ dataset.name }}" data-image-name="{{ image_slice.image_name }}" data-slice-index="{{ image_slice.slice_index }}" data-slice-type="{{ image_slice.slice_type.name }}" data-intensity-min="0" data-intensity-max="{{ image_max }}">
             </div>
-            <div class="cat-slice-label-controls">
-            {% for lv in label_session.label_values() %}
-                {% set selected = (lv == slice_label_value) %}
-                <button class="label-control button btn-fixed-l spaced text-m {% if selected %}selected{% endif %}" data-control-index="{{ loop.index0 }}" data-element-id="{{ element_id }}" data-label-value="{{ lv }}">{{ lv }} ({{ loop.index }})</button>
-            {% endfor %}
+            <div>
+                <div class="timer-container">
+                    <div class="text-m text-white" id="timer-display">00:00</div>
+                    <button class="timer-button button btn-s text-s" id="timer-reset">Reset</button>
+                </div>
+                <div class="cat-slice-label-controls">
+                    <div class="text-s text-gray">Labels</div>
+                    {% for lv in label_session.label_values() %}
+                        {% set selected = (lv == slice_label_value) %}
+                        <button class="label-control button btn-fixed-m spaced text-s {% if selected %}selected{% endif %}" data-control-index="{{ loop.index0 }}" data-element-id="{{ element_id }}" data-label-value="{{ lv }}">{{ lv }} ({{ loop.index }})</button>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
