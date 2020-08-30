@@ -34,6 +34,16 @@ def get_comparisons_from_session(label_session: LabelSession) -> List[Tuple[Imag
     return comparisons
 
 
+def get_volume_width(image_path: str, slice_type: SliceType) -> int:
+    vol = nibabel.load(image_path)
+
+    # Correct for orientation of volume without loading image data
+    orientations = [int(v[0]) for v in nibabel.io_orientation(vol.affine)]
+    dim = orientations.index(slice_type.value)
+
+    return vol.header.get_data_shape()[dim]
+
+
 def sample_slices(dataset: Dataset, slice_type: SliceType, image_count: int, slice_count: int,
                   min_slice_percent: int, max_slice_percent: int) -> List[ImageSlice]:
     images = random.sample(backend.get_images(dataset), image_count)
@@ -41,12 +51,7 @@ def sample_slices(dataset: Dataset, slice_type: SliceType, image_count: int, sli
 
     for i in range(slice_count):
         im: DataImage = random.choice(images)
-        vol = nibabel.load(im.path)
-
-        # Correct for orientation of volume without loading image data
-        orientations = [int(v[0]) for v in nibabel.io_orientation(vol.affine)]
-        dim = orientations.index(slice_type.value)
-        im_slice_max = vol.header.get_data_shape()[dim]
+        im_slice_max = get_volume_width(im.path, slice_type)
 
         slice_min = int(im_slice_max * (min_slice_percent / 100))
         slice_max = int(im_slice_max * (max_slice_percent / 100))
