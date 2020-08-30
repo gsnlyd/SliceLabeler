@@ -293,3 +293,75 @@ class TestSessions(TestCase, TestCaseMixin):
         self.assertEqual(elements_json[0], '0,img1.nii.gz,SAGITTAL,0,img3,CORONAL,1')
         self.assertEqual(elements_json[1], '1,img2.nii,SAGITTAL,0,img3,AXIAL,1')
         self.assertEqual(elements_json[2], '2,img2.nii,CORONAL,255,img1.nii.gz,AXIAL,100')
+
+    def test_import_session_metadata(self):
+        dataset = backend.get_dataset('dataset1')
+        session_json = {
+            'dataset': 'non_existent_dataset',
+            'session_name': 'session99',
+            'session_type': LabelSessionType.CATEGORICAL_IMAGE.name,
+            'prompt': 'test_prompt',
+            'label_values_str': 'l1,l2,l3',
+            'elements': []
+        }
+        sessions.import_session_json(db.session, dataset, 'session1', session_json)
+        label_session = sessions.get_session_by_id(db.session, 1)
+
+        self.assertEqual(label_session.session_name, 'session1')
+        self.assertEqual(label_session.session_type, LabelSessionType.CATEGORICAL_IMAGE.name)
+        self.assertEqual(label_session.prompt, 'test_prompt')
+        self.assertEqual(label_session.dataset, 'dataset1')
+        self.assertEqual(label_session.label_values_str, 'l1,l2,l3')
+
+    def test_import_session_elements_length(self):
+        dataset = backend.get_dataset('dataset1')
+        session_json = {
+            'dataset': 'dataset1',
+            'session_name': 'session1',
+            'session_type': LabelSessionType.CATEGORICAL_IMAGE.name,
+            'prompt': 'test_prompt',
+            'label_values_str': 'l1,l2,l3',
+            'elements': [
+                '0,img1.nii.gz,None,None,None,None,None',
+                '1,img2.nii,None,None,None,None,None',
+                '2,img3,None,None,None,None,None',
+            ]
+        }
+        sessions.import_session_json(db.session, dataset, 'session1', session_json)
+        label_session = sessions.get_session_by_id(db.session, 1)
+
+        element_count = len(label_session.elements)
+        self.assertEqual(element_count, 3)
+
+    def test_import_session_elements_metadata(self):
+        dataset = backend.get_dataset('dataset1')
+        session_json = {
+            'dataset': 'dataset1',
+            'session_name': 'session1',
+            'session_type': LabelSessionType.CATEGORICAL_IMAGE.name,
+            'prompt': 'test_prompt',
+            'label_values_str': 'l1,l2,l3',
+            'elements': [
+                '0,img1.nii.gz,None,None,None,None,None',
+                '1,img2.nii,None,None,None,None,None',
+                '2,img3,None,None,None,None,None',
+            ]
+        }
+        sessions.import_session_json(db.session, dataset, 'session1', session_json)
+
+        label_session = sessions.get_session_by_id(db.session, 1)
+        session_elements = label_session.elements
+
+        self.assertEqual(session_elements[0].element_index, 0)
+        self.assertEqual(session_elements[1].element_index, 1)
+        self.assertEqual(session_elements[2].element_index, 2)
+
+        self.assertEqual(session_elements[0].image_1_name, 'img1.nii.gz')
+        self.assertEqual(session_elements[1].image_1_name, 'img2.nii')
+        self.assertEqual(session_elements[2].image_1_name, 'img3')
+
+        self.assertIsNone(session_elements[0].slice_1_index)
+        self.assertIsNone(session_elements[0].slice_1_type)
+        self.assertIsNone(session_elements[0].image_2_name)
+        self.assertIsNone(session_elements[0].slice_2_index)
+        self.assertIsNone(session_elements[0].slice_2_type)
