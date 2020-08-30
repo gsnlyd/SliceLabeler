@@ -252,3 +252,44 @@ class TestSessions(TestCase, TestCaseMixin):
 
         self.assertEqual(session_elements[2].slice_1_type, SliceType.CORONAL.name)
         self.assertEqual(session_elements[2].slice_2_type, SliceType.AXIAL.name)
+
+    def test_export_session_json_metadata(self):
+        dataset = backend.get_dataset('dataset1')
+        sessions.create_categorical_image_session(db.session, 'session1', 'test_prompt', dataset, ['l1', 'l2', 'l3'])
+
+        label_session = sessions.get_session_by_id(db.session, 1)
+        session_json = sessions.export_session_json(label_session)
+
+        self.assertEqual(session_json['dataset'], 'dataset1')
+        self.assertEqual(session_json['session_name'], 'session1')
+        self.assertEqual(session_json['session_type'], LabelSessionType.CATEGORICAL_IMAGE.name)
+        self.assertEqual(session_json['prompt'], 'test_prompt')
+        self.assertEqual(session_json['label_values_str'], 'l1,l2,l3')
+
+    def test_export_session_json_elements_length(self):
+        dataset = backend.get_dataset('dataset1')
+        sessions.create_categorical_image_session(db.session, 'session1', 'test_prompt', dataset, ['l1', 'l2', 'l3'])
+
+        label_session = sessions.get_session_by_id(db.session, 1)
+        session_json = sessions.export_session_json(label_session)
+
+        element_count = len(session_json['elements'])
+        self.assertEqual(element_count, 3)
+
+    def test_export_session_json_elements_metadata(self):
+        dataset = backend.get_dataset('dataset1')
+        comparisons = [
+            (ImageSlice('img1.nii.gz', 0, SliceType.SAGITTAL), ImageSlice('img3', 1, SliceType.CORONAL)),
+            (ImageSlice('img2.nii', 0, SliceType.SAGITTAL), ImageSlice('img3', 1, SliceType.AXIAL)),
+            (ImageSlice('img2.nii', 255, SliceType.CORONAL), ImageSlice('img1.nii.gz', 100, SliceType.AXIAL))
+        ]
+        sessions.create_comparison_slice_session(db.session, 'session1', 'test_prompt', dataset,
+                                                 ['l1', 'l2', 'l3'], comparisons)
+        label_session = sessions.get_session_by_id(db.session, 1)
+
+        session_json = sessions.export_session_json(label_session)
+        elements_json = session_json['elements']
+
+        self.assertEqual(elements_json[0], '0,img1.nii.gz,SAGITTAL,0,img3,CORONAL,1')
+        self.assertEqual(elements_json[1], '1,img2.nii,SAGITTAL,0,img3,AXIAL,1')
+        self.assertEqual(elements_json[2], '2,img2.nii,CORONAL,255,img1.nii.gz,AXIAL,100')
