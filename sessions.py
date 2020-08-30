@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from enum import Enum, auto
 from io import BytesIO, StringIO
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict
 
 from sqlalchemy.orm import Session
 from werkzeug.datastructures import FileStorage
@@ -114,7 +114,7 @@ def create_comparison_slice_session(session: Session, name: str, prompt: str,
     session.commit()
 
 
-def export_session(label_session: LabelSession) -> BytesIO:
+def export_session_json(label_session: LabelSession) -> Dict:
     session_json = {
         'dataset': label_session.dataset,
         'session_name': label_session.session_name,
@@ -139,6 +139,11 @@ def export_session(label_session: LabelSession) -> BytesIO:
         )))
 
     session_json['elements'] = elements_rows
+    return session_json
+
+
+def export_session(label_session: LabelSession) -> BytesIO:
+    session_json = export_session_json(label_session)
 
     sio = StringIO()
     json.dump(session_json, sio, indent=1)
@@ -152,10 +157,7 @@ def export_session(label_session: LabelSession) -> BytesIO:
     return bio
 
 
-def import_session(session: Session, dataset: Dataset, name: str, session_file: FileStorage):
-    session_json = json.load(session_file.stream)
-    print(session_json)
-
+def import_session_json(session: Session, dataset: Dataset, name: str, session_json: Dict):
     session_type = LabelSessionType[session_json['session_type']]
     prompt = session_json['prompt']
     label_values_str = session_json['label_values_str']
@@ -202,3 +204,8 @@ def import_session(session: Session, dataset: Dataset, name: str, session_file: 
         session.add(el)
 
     session.commit()
+
+
+def import_session(session: Session, dataset: Dataset, name: str, session_file: FileStorage):
+    session_json = json.load(session_file.stream)
+    import_session_json(session, dataset, name, session_json)
