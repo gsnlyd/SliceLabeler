@@ -1,5 +1,6 @@
 # Project
 data/
+static/thumbnails/
 static/slices/
 db/
 exported_labels/

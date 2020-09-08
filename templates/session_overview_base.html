@@ -4,11 +4,18 @@
     <div class="main-container-1200">
         <a href="{{ url_for('dataset_overview', dataset_name=dataset.name) }}" class="text-m text-link text-orange">Back to {{ dataset.name }}</a>
         <div class="text-header">{{ label_session.session_name }}</div>
-        <div class="text-m text-gray">{{ 'Comparison Session' if label_session.session_type == 'comparison' else 'Categorical Session' }}</div>
+        <div class="text-m text-gray">{{ 'Comparison Session' if label_session.session_type.startswith('COMPARISON') else 'Categorical Session' }}</div>
         <div class="text-s">
             <a href="{{ url_for('export_labels', session_id=label_session.id) }}" class="text-link text-orange">Export Labels</a>
             <span class="text-gray">&bull;</span>
             <a href="{{ url_for('export_session', session_id=label_session.id) }}" class="text-link text-orange">Export Session</a>
+        </div>
+        <div>
+        {% if not has_thumbs %}
+            <br>
+            <div class="text-xs text-gray">No thumbnails found</div>
+            <a href="{{ url_for('generate_thumbnails', session_id=label_session.id) }}" class="text-s text-link text-orange">Generate Thumbnails</a>
+        {% endif %}
         </div>
         <div class="session-prompt text-l text-gray">{{ label_session.prompt }}</div>
         <div class="text-s text-gray">{{ ', '.join(label_session.label_values()) }}</div>

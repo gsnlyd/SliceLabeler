@@ -129,6 +129,10 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--color-red);
 }
 
+.text-blue {
+    color: var(--color-blue);
+}
+
 .align-left {
     text-align: left;
 }
@@ -355,6 +359,22 @@ h1, h2, h3, h4, h5, h6 {
 
 .session-resume-button {
     margin-top: 10px;
+}
+
+.session-rankings-link {
+    margin-top: 10px;
+}
+
+.rankings-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    justify-items: center;
+    align-items: start;
+    grid-gap: 20px 0;
+}
+
+.rankings-img {
+    border-radius: var(--b-radius);
 }
 
 

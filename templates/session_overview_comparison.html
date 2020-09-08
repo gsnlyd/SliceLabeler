@@ -3,6 +3,9 @@
     {% if resume_point is not none %}
         <a href="{{ url_for('label_compare', label_session=label_session.id, i=resume_point) }}" class="session-resume-button link-button orange text-m">{{ 'Start Labeling' if resume_point == 0 else 'Resume Labeling' }}</a>
     {% endif %}
+    <div class="session-rankings-link">
+        <a href="{{ url_for('slice_rankings', session_id=label_session.id) }}" class="text-s text-link text-blue">View Rankings</a>
+    </div>
     <div class="session-content card">
         <div class="text-xl">Comparisons</div>
         <div class="text-m text-gray">(Click label to view)</div>

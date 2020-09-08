@@ -6,8 +6,10 @@ from flask import Flask, redirect, url_for, render_template, abort, request, jso
 
 import backend
 import labels
+import ranking
 import sampling
 import sessions
+import thumbnails
 from forms import CreateCategoricalSessionForm, CreateComparisonSessionForm, ComparisonNumberRange, \
     CreateCategoricalSliceSessionForm, ImportSessionForm
 from model import db, LabelSession
@@ -88,6 +90,15 @@ def export_session(session_id: int):
                      cache_timeout=0)
 
 
+@application.route('/generate-thumbnails/<int:session_id>')
+def generate_thumbnails(session_id: int):
+    label_session = sessions.get_session_by_id(db.session, session_id)
+    if label_session is None:
+        abort(400)
+    thumbnails.create_thumbnails(label_session)
+    return redirect(url_for('session_overview', session_id=session_id))
+
+
 @application.route('/datasets')
 def dataset_list():
     datasets = [(d, backend.get_images(d), sessions.get_sessions(db.session, d))
@@ -120,6 +131,8 @@ def session_overview(session_id: int):
     label_session = sessions.get_session_by_id(db.session, session_id)
     dataset = backend.get_dataset(label_session.dataset)
 
+    has_thumbs = thumbnails.has_thumbnails(label_session)
+
     resume_point = None
     for session_element in label_session.elements:
         if len(session_element.labels) == 0:
@@ -132,18 +145,35 @@ def session_overview(session_id: int):
                                label_session=label_session,
                                dataset=dataset,
                                images=images,
-                               resume_point=resume_point)
+                               resume_point=resume_point,
+                               has_thumbs=has_thumbs)
 
     elif label_session.session_type == LabelSessionType.CATEGORICAL_SLICE.name:
         return render_template('session_overview_categorical_slice.html',
                                label_session=label_session,
                                dataset=dataset,
-                               resume_point=resume_point)
+                               resume_point=resume_point,
+                               has_thumbs=has_thumbs)
     else:  # COMPARISON_SLICE
         return render_template('session_overview_comparison.html',
                                label_session=label_session,
                                dataset=dataset,
-                               resume_point=resume_point)
+                               resume_point=resume_point,
+                               has_thumbs=has_thumbs)
+
+
+@application.route('/slice-rankings/<int:session_id>')
+def slice_rankings(session_id: int):
+    label_session = sessions.get_session_by_id(db.session, session_id)
+    dataset = backend.get_dataset(label_session.dataset)
+
+    ranked_slices = ranking.rank_slices(label_session)
+    thumbnail_names = thumbnails.get_thumbnail_names(label_session)
+
+    return render_template('slice_rankings.html',
+                           label_session=label_session,
+                           ranked_slices=ranked_slices,
+                           thumbnail_names=thumbnail_names)
 
 
 @application.route('/import-session/<string:dataset_name>', methods=['GET', 'POST'])

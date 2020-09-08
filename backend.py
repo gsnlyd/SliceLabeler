@@ -85,6 +85,10 @@ def get_image_by_index(dataset: Dataset, image_index: int) -> Tuple[Optional[Dat
         return None, len(images)
 
 
+def slice_name(image_slice: ImageSlice) -> str:
+    return '{}_{}_{}'.format(image_slice.image_name, image_slice.slice_type.name, image_slice.slice_index)
+
+
 thumb_cache = {}
 
 
@@ -100,7 +104,7 @@ def __load_cached_image(image: DataImage):
 
 
 def get_slice(d_img: DataImage, slice_index: int, slice_type: SliceType,
-              intensity_min: int, intensity_max: int) -> Image.Image:
+              intensity_min: int, intensity_max: Optional[int]) -> Image.Image:
     data = __load_cached_image(d_img).get_fdata()
 
     if slice_type == SliceType.SAGITTAL:
@@ -112,8 +116,12 @@ def get_slice(d_img: DataImage, slice_index: int, slice_type: SliceType,
 
     if len(slice_data.shape) > 2:
         slice_data = slice_data.squeeze(axis=2)
+
+    if intensity_max is None:
+        intensity_max = int(np.max(slice_data))
     slice_data = np.clip(slice_data, intensity_min, intensity_max)
     slice_data = ((slice_data / intensity_max) * 255).astype('uint8')
+
     slice_data = np.flip(slice_data.T, axis=0)
     return Image.fromarray(slice_data)
 
