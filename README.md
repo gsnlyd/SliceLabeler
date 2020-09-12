@@ -1,4 +1,7 @@
 ## Browser-based GUI for labeling MRI volumes and slices.
+### Requirements:
+Python 3.6 or higher is needed.
+
 ### Installation:
 First, clone the repo and cd into the new directory.
 
@@ -7,14 +10,14 @@ Then, create a python virtual environment and install the dependencies:
 ```shell script
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 #### Windows CMD:
 ```
 python3 -m venv venv
 venv\Scripts\activate.bat
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ### Usage:
