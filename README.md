@@ -1,4 +1,8 @@
 ## Browser-based GUI for labeling MRI volumes and slices.
+### Python Version:
+The latest version of Python 3 is recommended.
+
+Python 3.6 or newer is required.
 ### Installation:
 First, clone the repo and cd into the new directory.
 
