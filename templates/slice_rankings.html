@@ -4,7 +4,7 @@
         <a href="{{ url_for('session_overview', session_id=label_session.id) }}" class="text-m text-link text-orange">Back to {{ label_session.session_name }}</a>
         <div class="text-xl">{{ label_session.session_name }} Slices (Ranked)</div>
         <div class="card rankings-grid">
-        {% for slice in ranked_slices %}
+        {% for slice, rank_data in ranked_slices %}
             <div class="align-center">
                 <img class="rankings-img" src="/static/thumbnails/session-{{ label_session.id }}/{{ thumbnail_names[loop.index0] }}">
                 <div>
@@ -13,7 +13,13 @@
                         <span>{{ slice.slice_type.name.capitalize() }}</span>
                         <span>({{ slice.slice_index }})</span>
                     </div>
-                    <div class="text-xs">#{{ loop.index }} / {{ ranked_slices|length }}</div>
+                    <div class="text-xs text-gray weight-bold"></div>
+                    <div class="text-xs">Score: {{ rank_data.score }} | #{{ loop.index }} / {{ ranked_slices|length }}</div>
+                    <div class="text-xs text-gray">
+                        (<span>+{{ rank_data.win_count }}</span>
+                        <span>-{{ rank_data.loss_count }}</span>
+                        <span>~{{ rank_data.draw_count }}</span>)
+                    </div>
                 </div>
             </div>
         {% endfor %}

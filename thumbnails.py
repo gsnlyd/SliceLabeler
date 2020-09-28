@@ -13,8 +13,8 @@ def get_session_thumbnails_dir_path(label_session: LabelSession) -> str:
     return os.path.join(THUMBS_PATH, 'session-{}'.format(label_session.id))
 
 
-def get_thumbnail_names(label_session: LabelSession) -> List[str]:
-    return [backend.slice_name(sl) + THUMB_EXTENSION for sl in sampling.get_slices_from_session(label_session)]
+def get_thumbnail_name(image_slice: backend.ImageSlice) -> str:
+    return backend.slice_name(image_slice) + THUMB_EXTENSION
 
 
 def create_thumbnails(label_session: LabelSession):

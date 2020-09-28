@@ -165,10 +165,9 @@ def session_overview(session_id: int):
 @application.route('/slice-rankings/<int:session_id>')
 def slice_rankings(session_id: int):
     label_session = sessions.get_session_by_id(db.session, session_id)
-    dataset = backend.get_dataset(label_session.dataset)
 
     ranked_slices = ranking.rank_slices(label_session)
-    thumbnail_names = thumbnails.get_thumbnail_names(label_session)
+    thumbnail_names = [thumbnails.get_thumbnail_name(t[0]) for t in ranked_slices]
 
     return render_template('slice_rankings.html',
                            label_session=label_session,

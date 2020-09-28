@@ -5,7 +5,7 @@ import nibabel
 
 import backend
 from backend import Dataset, DataImage, ImageSlice, SliceType
-from model import LabelSession
+from model import LabelSession, SessionElement
 from sessions import LabelSessionType
 
 
@@ -24,14 +24,13 @@ def get_slices_from_session(label_session: LabelSession) -> List[ImageSlice]:
     return slices
 
 
+def get_comparison_from_element(el: SessionElement) -> Tuple[ImageSlice, ImageSlice]:
+    return (ImageSlice(el.image_1_name, el.slice_1_index, SliceType[el.slice_1_type]),
+            ImageSlice(el.image_2_name, el.slice_2_index, SliceType[el.slice_2_type]))
+
+
 def get_comparisons_from_session(label_session: LabelSession) -> List[Tuple[ImageSlice, ImageSlice]]:
-    comparisons = []
-    for el in label_session.elements:
-        comparisons.append((
-            ImageSlice(el.image_1_name, el.slice_1_index, SliceType[el.slice_1_type]),
-            ImageSlice(el.image_2_name, el.slice_2_index, SliceType[el.slice_2_type])
-        ))
-    return comparisons
+    return [get_comparison_from_element(el) for el in label_session.elements]
 
 
 def get_volume_width(image_path: str, slice_type: SliceType) -> int:
