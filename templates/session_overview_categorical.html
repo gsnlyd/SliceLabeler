@@ -1,26 +1,34 @@
 {% extends 'session_overview_base.html' %}
 {% block session_content %}
-    {% if resume_point is not none %}
-        <a href="{{ url_for('label', label_session=label_session.id, i=resume_point) }}" class="session-resume-button link-button orange text-m">{{ 'Start Labeling' if resume_point == 0 else 'Resume Labeling' }}</a>
-    {% endif %}
     <div class="session-content card">
-        <div class="text-xl">Images</div>
-        <div class="text-m text-gray">(Click label to view)</div>
+        <div class="session-content-header">
+            <div class="text-ml">{{ label_session.element_count }} Volumes</div>
+            {% if resume_point is not none %}
+                <a href="{{ url_for('label', label_session=label_session.id, i=resume_point) }}" class="session-resume-button link-button orange text-m">{{ 'Start Labeling' if resume_point == 0 else 'Resume Labeling' }}</a>
+            {% else %}
+                <div class="session-resume-button link-button orange text-m disabled">Resume Labeling</div>
+                <div class="text-xs text-gray">All volumes already labeled.</div>
+            {% endif %}
+        </div>
         <table class="table text-s text-gray">
             <thead>
                 <tr>
                     <th></th>
                     <th>Image</th>
                     <th>Label</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for session_element in label_session.elements %}
                     {% set label_val = session_element.current_label_value()  %}
-                    <tr>
+                    <tr class="session-table-row">
                         <td class="align-right">{{ loop.index }}</td>
                         <td class="align-center">{{ session_element.image_1_name }}</td>
-                        <td class="align-center"><a href="{{ url_for('label', label_session=label_session.id, i=loop.index0) }}" class="text-gray text-link">{{ 'Unlabeled' if label_val is none else label_val }}</a></td>
+                        <td class="align-center">{{ '-' if label_val is none else label_val }}</td>
+                        <td class="align-center">
+                            <a class="session-table-row-hide link-button orange text-s" href="{{ url_for('label', label_session=label_session.id, i=loop.index0) }}">Edit Label</a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

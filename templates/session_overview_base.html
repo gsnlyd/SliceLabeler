@@ -11,10 +11,11 @@
             <a href="{{ url_for('export_session', session_id=label_session.id) }}" class="text-link text-orange">Export Session</a>
         </div>
         <div>
-        {% if not has_thumbs %}
-            <br>
-            <div class="text-xs text-gray">No thumbnails found</div>
-            <a href="{{ url_for('generate_thumbnails', session_id=label_session.id) }}" class="text-s text-link text-orange">Generate Thumbnails</a>
+        {% if not has_thumbs and needs_thumbs %}
+            <div class="session-no-thumbs-container">
+                <div class="text-bubble text-yellow text-xs weight-normal">No thumbnails found!</div>
+                <a href="{{ url_for('generate_thumbnails', session_id=label_session.id) }}" class="session-generate-thumbs text-m text-link text-orange">Generate Thumbnails</a>
+            </div>
         {% endif %}
         </div>
         <div class="session-prompt text-l text-gray">{{ label_session.prompt }}</div>

@@ -146,20 +146,23 @@ def session_overview(session_id: int):
                                dataset=dataset,
                                images=images,
                                resume_point=resume_point,
-                               has_thumbs=has_thumbs)
+                               has_thumbs=has_thumbs,
+                               needs_thumbs=False)
 
     elif label_session.session_type == LabelSessionType.CATEGORICAL_SLICE.name:
         return render_template('session_overview_categorical_slice.html',
                                label_session=label_session,
                                dataset=dataset,
                                resume_point=resume_point,
-                               has_thumbs=has_thumbs)
+                               has_thumbs=has_thumbs,
+                               needs_thumbs=False)
     else:  # COMPARISON_SLICE
         return render_template('session_overview_comparison.html',
                                label_session=label_session,
                                dataset=dataset,
                                resume_point=resume_point,
-                               has_thumbs=has_thumbs)
+                               has_thumbs=has_thumbs,
+                               needs_thumbs=True)
 
 
 @application.route('/slice-rankings/<int:session_id>')
