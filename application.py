@@ -276,8 +276,10 @@ def create_comparison_session(dataset_name: str):
     for sess in comparison_sessions:
         form.comparisons.choices.append((str(sess.id), sess.session_name))
 
-    form.image_count.validators.append(ComparisonNumberRange(
-        min=1, max=total_image_count, message='Must be between %(min)s and %(max)s (the dataset size).'))
+    form.image_count.validators = [
+        ComparisonNumberRange(min=1, max=total_image_count,
+                              message='Must be between %(min)s and %(max)s (the dataset size).')
+    ]
 
     if form.validate_on_submit():
         if form.session_name.data in [se.session_name for se in current_sessions]:
