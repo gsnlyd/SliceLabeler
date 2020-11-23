@@ -3,6 +3,7 @@ from io import BytesIO
 from typing import Dict, List
 
 from flask import Flask, redirect, url_for, render_template, abort, request, jsonify, send_file
+from wtforms.validators import NumberRange
 
 import backend
 import labels
@@ -11,7 +12,7 @@ import sampling
 import sessions
 import thumbnails
 from forms import CreateCategoricalSessionForm, CreateComparisonSessionForm, ComparisonNumberRange, \
-    CreateCategoricalSliceSessionForm, ImportSessionForm
+    CreateCategoricalSliceSessionForm, ImportSessionForm, CreateSortSessionForm
 from model import db, LabelSession
 from sessions import LabelSessionType
 
@@ -156,13 +157,22 @@ def session_overview(session_id: int):
                                resume_point=resume_point,
                                has_thumbs=has_thumbs,
                                needs_thumbs=False)
-    else:  # COMPARISON_SLICE
+    elif label_session.session_type == LabelSessionType.COMPARISON_SLICE.name:
         return render_template('session_overview_comparison.html',
                                label_session=label_session,
                                dataset=dataset,
                                resume_point=resume_point,
                                has_thumbs=has_thumbs,
                                needs_thumbs=True)
+    elif label_session.session_type == LabelSessionType.SORT_SLICE.name:
+        return render_template('session_overview_sort.html',
+                               label_session=label_session,
+                               dataset=dataset,
+                               resume_point=resume_point,
+                               has_thumbs=has_thumbs,
+                               needs_thumbs=True)
+    else:
+        abort(500)
 
 
 @application.route('/slice-rankings/<int:session_id>')
@@ -302,6 +312,43 @@ def create_comparison_session(dataset_name: str):
             return redirect(url_for('dataset_overview', dataset_name=dataset.name))
 
     return render_template('create_comparison_session.html',
+                           dataset=dataset,
+                           label_session_count=label_session_count,
+                           total_image_count=total_image_count,
+                           form=form)
+
+
+@application.route('/create-sort-session/<string:dataset_name>', methods=['GET', 'POST'])
+def create_sort_session(dataset_name: str):
+    dataset = backend.get_dataset(dataset_name)
+    if dataset is None:
+        abort(400)
+
+    current_sessions = sessions.get_sessions(db.session, dataset)
+    label_session_count = len(current_sessions)
+
+    images = backend.get_images(dataset)
+    total_image_count = len(images)
+
+    form = CreateSortSessionForm(meta={'csrf': False})
+
+    form.image_count.validators = [
+        NumberRange(min=1, max=total_image_count, message='Must be between %(min)s and %(max)s (the dataset size).')
+    ]
+
+    if form.validate_on_submit():
+        if form.session_name.data in [se.session_name for se in current_sessions]:
+            form.session_name.errors.append('Session name already in use.')
+        elif form.min_slice_percent.data >= form.max_slice_percent.data:
+            form.max_slice_percent.errors.append('Max must be greater than min.')
+        else:
+            slice_type = backend.SliceType[form.slice_type.data]
+            slices = sampling.sample_slices(dataset, slice_type, form.image_count.data, form.slice_count.data,
+                                            form.min_slice_percent.data, form.max_slice_percent.data)
+
+            sessions.create_sort_slice_session(db.session, form.session_name.data, form.prompt.data, dataset, slices)
+            return redirect(url_for('dataset_overview', dataset_name=dataset.name))
+    return render_template('create_sort_session.html',
                            dataset=dataset,
                            label_session_count=label_session_count,
                            total_image_count=total_image_count,

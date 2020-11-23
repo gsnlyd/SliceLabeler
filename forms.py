@@ -82,6 +82,32 @@ class CreateComparisonSessionForm(FlaskForm):
     submit_button = SubmitField('Create')
 
 
+class CreateSortSessionForm(FlaskForm):
+    session_name = StringField('Session Name',
+                               validators=[Length(3, 100, LENGTH_MESSAGE)],
+                               render_kw={'placeholder': 'My Session'})
+    prompt = StringField('Label Prompt',
+                         validators=[Length(0, 100, LENGTH_MESSAGE)],
+                         render_kw={'placeholder': 'Which slice has more severe artifacts?'})
+    slice_type = SelectField('Orientation', choices=[('SAGITTAL', 'Sagittal'),
+                                                     ('CORONAL', 'Coronal'),
+                                                     ('AXIAL', 'Axial')])
+    image_count = IntegerField('Number of Images')
+
+    slice_count = IntegerField('Total Number of Slices', validators=[NumberRange(min=2)],
+                               render_kw={'placeholder': 1000,
+                                          'value': 1000})
+
+    min_slice_percent = IntegerField('Min Slice (%)', validators=[NumberRange(min=0, max=99)],
+                                     render_kw={'placeholder': 0,
+                                                'value': 10})
+
+    max_slice_percent = IntegerField('Max Slice (%)', validators=[NumberRange(min=1, max=100)],
+                                     render_kw={'placeholder': 100,
+                                                'value': 90})
+    submit_button = SubmitField('Create')
+
+
 class ImportSessionForm(FlaskForm):
     session_name = StringField('Session Name',
                                validators=[Length(3, 100, LENGTH_MESSAGE)],

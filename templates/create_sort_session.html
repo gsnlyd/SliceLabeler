@@ -1,0 +1,47 @@
+{% extends 'create_form_base.html' %}
+{% block title %}{{ dataset.name }}: New Comparison Sort Session{% endblock %}
+{% block form_body %}
+    <div class="text-l">
+        <span class="">Create comparison sort session for</span>
+        <span class="weight-medium">{{ dataset.name }}</span>
+    </div>
+    <form class="form" method="POST">
+        <div class="form-section">
+            <div class="form-group form-group-md">
+                {{ form_components.label_and_errors(form.session_name) }}
+                {{ form.session_name(class_='form-field form-input text-m') }}
+            </div>
+            <div class="form-group form-group-lg">
+                {{ form_components.label_and_errors(form.prompt) }}
+                {{ form.prompt(class_='form-field form-input text-m') }}
+            </div>
+        </div>
+        <div class="form-section form-section-border" id="comparison-list-field-container">
+            <div class="form-group form-group-md">
+                {{ form_components.label_and_errors(form.slice_type) }}
+                {{ form.slice_type(class_='form-select text-m') }}
+            </div>
+            <div class="form-group form-group-md">
+                {{ form_components.label_and_errors(form.image_count) }}
+                {{ form.image_count(class_='form-input text-m', value=total_image_count, placeholder=total_image_count) }}
+            </div>
+            <div class="form-group form-group-md">
+                {{ form_components.label_and_errors(form.slice_count) }}
+                {{ form.slice_count(class_='form-input text-m') }}
+            </div>
+            <div class="form-line form-group-md">
+                <div class="form-group form-group-flex">
+                    {{ form_components.label_and_errors(form.min_slice_percent) }}
+                    {{ form.min_slice_percent(class_='form-input text-m') }}
+                </div>
+                <div class="form-group form-group-flex">
+                    {{ form_components.label_and_errors(form.max_slice_percent) }}
+                    {{ form.max_slice_percent(class_='form-input text-m') }}
+                </div>
+            </div>
+        </div>
+        <div class="form-section form-section-submit">
+            {{ form.submit_button(class_='text-m button orange') }}
+        </div>
+    </form>
+{% endblock %}

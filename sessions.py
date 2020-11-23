@@ -16,6 +16,7 @@ class LabelSessionType(Enum):
     CATEGORICAL_IMAGE = auto()
     CATEGORICAL_SLICE = auto()
     COMPARISON_SLICE = auto()
+    SORT_SLICE = auto()
 
 
 def get_session_by_id(session: Session, label_session_id: int) -> Optional[LabelSession]:
@@ -107,6 +108,36 @@ def create_comparison_slice_session(session: Session, name: str, prompt: str,
             image_2_name=sl2.image_name,
             slice_2_index=sl2.slice_index,
             slice_2_type=sl2.slice_type.name,
+            session=label_session
+        )
+        session.add(el)
+
+    session.commit()
+
+
+SORT_LABEL_VALUES_STR = 'No Difference'
+
+
+def create_sort_slice_session(session: Session, name: str, prompt: str, dataset: Dataset,
+                              slices: List[ImageSlice]):
+    label_session = LabelSession(
+        dataset=dataset.name,
+        session_name=name,
+        session_type=LabelSessionType.SORT_SLICE.name,
+        prompt=prompt,
+        date_created=datetime.now(),
+        label_values_str=SORT_LABEL_VALUES_STR,
+        element_count=len(slices)
+    )
+
+    session.add(label_session)
+
+    for i, sl in enumerate(slices):
+        el = SessionElement(
+            element_index=i,
+            image_1_name=sl.image_name,
+            slice_1_index=sl.slice_index,
+            slice_1_type=sl.slice_type.name,
             session=label_session
         )
         session.add(el)

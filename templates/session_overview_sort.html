@@ -1,0 +1,46 @@
+{% extends 'session_overview_base.html' %}
+{% block session_content %}
+    <div class="session-rankings-link">
+        <a href="{{ url_for('slice_rankings', session_id=label_session.id) }}" class="text-s text-link text-blue">View Rankings</a>
+    </div>
+    <div class="session-content card">
+        <div class="session-content-header">
+            <div class="text-l">{{ label_session.element_count }} Comparisons</div>
+            {% if resume_point is not none %}
+                <a href="{{ url_for('label_compare', label_session=label_session.id, i=resume_point) }}" class="session-resume-button link-button orange text-m">{{ 'Start Labeling' if resume_point == 0 else 'Resume Labeling' }}</a>
+            {% else %}
+                <div class="session-resume-button link-button orange text-m disabled">Resume Labeling</div>
+                <div class="text-xs text-gray">All comparisons already labeled.</div>
+            {% endif %}
+        </div>
+        <table class="table text-s text-gray">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Image 1</th>
+                    <th></th>
+                    <th></th>
+                    <th>Image 2</th>
+                    <th></th>
+                    <th></th>
+                    <th>Label</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for session_element in label_session.elements if session_element.image_2_name is not none %}
+                    {% set label_val = session_element.current_label_value()  %}
+                    <tr class="session-table-row">
+                        <td class="session-table-number">{{ loop.index }}</td>
+                        <td class="align-center session-table-cell-limited">{{ session_element.image_1_name }}</td>
+                        <td class="align-center">{{ session_element.slice_1_type.capitalize() }}</td>
+                        <td class="session-table-number">{{ session_element.slice_1_index }}</td>
+                        <td class="align-center session-table-cell-limited">{{ session_element.image_2_name }}</td>
+                        <td class="align-center">{{ session_element.slice_2_type.capitalize() }}</td>
+                        <td class="session-table-number">{{ session_element.slice_2_index }}</td>
+                        <td class="align-center">{{ '-' if label_val is none else label_val }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
