@@ -281,6 +281,10 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0;
 }
 
+.main-container-padded {
+    padding: 10px 100px;
+}
+
 .main-container-1200 {
     max-width: 1200px;
     margin: 10px auto;
@@ -447,12 +451,13 @@ h1, h2, h3, h4, h5, h6 {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     justify-items: center;
-    align-items: start;
+    align-items: end;
     grid-gap: 20px 0;
 }
 
 .rankings-img {
     border-radius: var(--b-radius);
+    width: 100%;
 }
 
 

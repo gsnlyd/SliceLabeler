@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block body %}
-    <div class="main-container-1200">
+    <div class="main-container-full main-container-padded">
         <a href="{{ url_for('session_overview', session_id=label_session.id) }}" class="text-m text-link text-orange">Back to {{ label_session.session_name }}</a>
         <div class="text-xl">{{ label_session.session_name }} Slices (Ranked)</div>
         <div class="card rankings-grid">
