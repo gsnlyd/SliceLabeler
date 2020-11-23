@@ -6,6 +6,7 @@ from flask import Flask, redirect, url_for, render_template, abort, request, jso
 from wtforms.validators import NumberRange
 
 import backend
+import comparesort
 import labels
 import ranking
 import sampling
@@ -499,8 +500,53 @@ def label_compare():
                            image_1_max=image_1_max,
                            image_2_max=image_2_max,
                            current_label_value=current_label_value,
+                           sort_mode=False,
                            previous_index=max(0, comparison_index - 1),
                            next_index=min(label_session.element_count - 1, comparison_index + 1))
+
+
+@application.route('/sort-compare')
+def label_sort_compare():
+    label_session_id = request.args.get('label_session')
+    if label_session_id is None:
+        abort(404)
+
+    label_session = sessions.get_session_by_id(db.session, label_session_id)
+    if label_session is None:
+        abort(404)
+    if label_session.session_type != LabelSessionType.SORT_SLICE.name:
+        abort(400)
+
+    dataset = backend.get_dataset(label_session.dataset)
+    if dataset is None:
+        abort(404)
+
+    comparison_el = comparesort.add_next_comparison(db.session, label_session)
+    if comparison_el is None:
+        return redirect(url_for('session_overview', session_id=label_session.id))
+
+    comparison = sampling.get_comparison_from_element(comparison_el)
+    slice_1, slice_2 = comparison
+
+    image_1 = backend.get_image(dataset, slice_1.image_name)
+    image_2 = backend.get_image(dataset, slice_2.image_name)
+
+    _, image_1_max = backend.get_image_info(image_1)
+    _, image_2_max = backend.get_image_info(image_2)
+
+    current_label_value = None
+
+    return render_template('label_compare.html',
+                           label_session=label_session,
+                           prompt=label_session.prompt,
+                           dataset=dataset,
+                           element_id=comparison_el.id,
+                           slice_1=slice_1,
+                           slice_2=slice_2,
+                           image_1_max=image_1_max,
+                           image_2_max=image_2_max,
+                           current_label_value=current_label_value,
+                           sort_mode=True)
 
 
 @application.route('/api/set-label-value', methods=['POST'])

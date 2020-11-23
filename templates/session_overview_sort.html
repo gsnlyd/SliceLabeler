@@ -6,8 +6,8 @@
     <div class="session-content card">
         <div class="session-content-header">
             <div class="text-l">{{ label_session.element_count }} Comparisons</div>
-            {% if resume_point is not none %}
-                <a href="{{ url_for('label_compare', label_session=label_session.id, i=resume_point) }}" class="session-resume-button link-button orange text-m">{{ 'Start Labeling' if resume_point == 0 else 'Resume Labeling' }}</a>
+            {% if true %}
+                <a href="{{ url_for('label_sort_compare', label_session=label_session.id) }}" class="session-resume-button link-button orange text-m">Label</a>
             {% else %}
                 <div class="session-resume-button link-button orange text-m disabled">Resume Labeling</div>
                 <div class="text-xs text-gray">All comparisons already labeled.</div>

@@ -8,12 +8,18 @@
         </div>
         <div class="compare-header">
             <div class="compare-image-info">
-                <a href="{{ url_for('label_compare', label_session=label_session.id, i=previous_index) }}" class="link-button text-s" id="previous-link">< Prev</a>
+                {% if not sort_mode %}
+                    <a href="{{ url_for('label_compare', label_session=label_session.id, i=previous_index) }}" class="link-button text-s" id="previous-link">< Prev</a>
+                {% endif %}
                 <a href="{{ url_for('viewer', dataset=dataset.name, image=slice_1.image_name) }}" class="text-link text-s text-gray">{{ dataset.name }} / {{ slice_1.image_name }} ({{ slice_1.slice_type.name.capitalize() }} #{{ slice_1.slice_index }})</a>
             </div>
             <div class="compare-image-info">
                 <a href="{{ url_for('viewer', dataset=dataset.name, image=slice_2.image_name) }}" class="text-link text-s text-gray">{{ dataset.name }} / {{ slice_2.image_name }} ({{ slice_2.slice_type.name.capitalize() }} #{{ slice_2.slice_index }})</a>
-                <a href="{{ url_for('label_compare', label_session=label_session.id, i=next_index) }}" class="link-button text-s" id="next-link">Next ></a>
+                {% if not sort_mode %}
+                    <a href="{{ url_for('label_compare', label_session=label_session.id, i=next_index) }}" class="link-button text-s" id="next-link">Next ></a>
+                {% else %}
+                    <a href="{{ url_for('label_sort_compare', label_session=label_session.id) }}" class="link-button text-s" id="next-link">Next ></a>
+                {% endif %}
             </div>
         </div>
         <div class="compare-container">

@@ -81,7 +81,7 @@ class TestSampling(TestCase, TestCaseMixin):
         sessions.create_categorical_image_session(db.session, 'session1', 'prompt', dataset, ['l1', 'l2', 'l3'])
         label_session = sessions.get_session_by_id(db.session, 1)
 
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             sampling.get_slices_from_session(label_session)
 
     def test_get_comparisons_from_session(self):
