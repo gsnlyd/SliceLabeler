@@ -180,7 +180,16 @@ def session_overview(session_id: int):
 def slice_rankings(session_id: int):
     label_session = sessions.get_session_by_id(db.session, session_id)
 
-    ranked_slices = ranking.rank_slices(label_session)
+    if label_session.session_type == LabelSessionType.COMPARISON_SLICE.name:
+        ranked_slices = ranking.rank_slices(label_session)
+    elif label_session.session_type == LabelSessionType.SORT_SLICE.name:
+        complete, _, sorted_slices = comparesort.add_next_comparison(db.session, label_session)
+        if not complete:
+            abort(400)
+        ranked_slices = [(sl, None) for sl in reversed(sorted_slices)]
+    else:
+        abort(400)
+
     thumbnail_names = [thumbnails.get_thumbnail_name(t[0]) for t in ranked_slices]
 
     return render_template('slice_rankings.html',
@@ -521,8 +530,8 @@ def label_sort_compare():
     if dataset is None:
         abort(404)
 
-    comparison_el = comparesort.add_next_comparison(db.session, label_session)
-    if comparison_el is None:
+    complete, comparison_el, _ = comparesort.add_next_comparison(db.session, label_session)
+    if complete:
         return redirect(url_for('session_overview', session_id=label_session.id))
 
     comparison = sampling.get_comparison_from_element(comparison_el)

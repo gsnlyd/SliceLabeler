@@ -1,5 +1,5 @@
 import functools
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 
 from sqlalchemy.orm import Session
 
@@ -12,10 +12,13 @@ class ComparisonNotFound(Exception):
     pass
 
 
-def add_next_comparison(session: Session, label_session: LabelSession) -> Optional[SessionElement]:
+ComparisonAddResult = Tuple[bool, Optional[SessionElement], Optional[List[ImageSlice]]]
+
+
+def add_next_comparison(session: Session, label_session: LabelSession) -> ComparisonAddResult:
     comparison_elements = [el for el in label_session.elements if el.image_2_name is not None]
     if len(comparison_elements) > 0 and len(comparison_elements[-1].labels) == 0:
-        return comparison_elements[-1]  # There is already a pending comparison
+        return False, comparison_elements[-1], None  # There is already a pending comparison
 
     slices = sampling.get_slices_from_session(label_session)
     comparison_count = len(comparison_elements)
@@ -35,8 +38,8 @@ def add_next_comparison(session: Session, label_session: LabelSession) -> Option
         raise ComparisonNotFound()
 
     try:
-        sorted(slices, key=functools.cmp_to_key(compare))
-        return None
+        slices_sorted = sorted(slices, key=functools.cmp_to_key(compare))
+        return True, None, slices_sorted
     except ComparisonNotFound:
         assert new_comparison is not None
         new_comparison: Tuple[ImageSlice, ImageSlice]
@@ -52,4 +55,4 @@ def add_next_comparison(session: Session, label_session: LabelSession) -> Option
         )
         label_session.elements.append(comparison_el)
         session.commit()
-        return comparison_el
+        return False, comparison_el, None

@@ -13,13 +13,16 @@
                         <span>{{ slice.slice_type.name.capitalize() }}</span>
                         <span>({{ slice.slice_index }})</span>
                     </div>
-                    <div class="text-xs text-gray weight-bold"></div>
+                    {% if rank_data %}
                     <div class="text-xs">Score: {{ rank_data.score }} | #{{ loop.index }} / {{ ranked_slices|length }}</div>
                     <div class="text-xs text-gray">
                         (<span>+{{ rank_data.win_count }}</span>
                         <span>-{{ rank_data.loss_count }}</span>
                         <span>~{{ rank_data.draw_count }}</span>)
                     </div>
+                    {% else %}
+                    <div class="text-xs">#{{ loop.index }}</div>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
