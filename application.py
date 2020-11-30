@@ -166,12 +166,16 @@ def session_overview(session_id: int):
                                has_thumbs=has_thumbs,
                                needs_thumbs=True)
     elif label_session.session_type == LabelSessionType.SORT_SLICE.name:
+        labels_complete = comparesort.add_next_comparison(db.session, label_session)[0]
         return render_template('session_overview_sort.html',
                                label_session=label_session,
                                dataset=dataset,
                                resume_point=resume_point,
                                has_thumbs=has_thumbs,
-                               needs_thumbs=True)
+                               needs_thumbs=True,
+                               labels_complete=labels_complete,
+                               slice_elements=[el for el in label_session.elements if not el.is_comparison()],
+                               comparison_elements=[el for el in label_session.elements if el.is_comparison()])
     else:
         abort(500)
 

@@ -2,7 +2,7 @@
 {% block session_content %}
     <div class="session-content card">
         <div class="session-content-header">
-            <div class="text-ml">{{ label_session.element_count }} Volumes</div>
+            <div class="text-l">{{ label_session.element_count }} Volumes</div>
             {% if resume_point is not none %}
                 <a href="{{ url_for('label', label_session=label_session.id, i=resume_point) }}" class="session-resume-button link-button orange text-m">{{ 'Start Labeling' if resume_point == 0 else 'Resume Labeling' }}</a>
             {% else %}

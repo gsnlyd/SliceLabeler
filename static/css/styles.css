@@ -25,10 +25,16 @@ h1, h2, h3, h4, h5, h6 {
     --color-dark-orange: #B24D2E;
     --color-light-orange: #FF6C3F;
     --color-transparent-orange: rgba(255, 108, 63, 0.5);
+
     --color-blue: #60BAF2;
+    --color-dark-blue: #3C9FDD;
     --color-transparent-blue: rgba(96, 186, 242, 0.6);
+
     --color-red: #ED2D30;
+
     --color-yellow: #F4E171;
+    --color-dark-yellow: #D4BA25;
+    --color-transparent-yellow: rgba(244, 255, 113, 0.5);
 
     --text-c1: #CCCDD2;
     --text-c2: #ACADAF;
@@ -204,6 +210,24 @@ h1, h2, h3, h4, h5, h6 {
 .link-button.orange:active, .link-button.orange:focus {
     outline: 0;
     box-shadow: 0  0 0 4px var(--color-transparent-orange);
+}
+
+.link-button.yellow {
+    background-color: var(--color-dark-yellow);
+    color: black;
+}
+.link-button.yellow:active, .link-button.yellow:focus {
+    outline: 0;
+    box-shadow: 0 0 0 4px var(--color-transparent-yellow);
+}
+
+.link-button.blue {
+    background-color: var(--color-dark-blue);
+    color: black;
+}
+.link-button.blue:active, .link-button.blue:focus {
+    outline: 0;
+    box-shadow: 0 0 0 4px var(--color-transparent-blue);
 }
 
 .link-button.disabled {
@@ -385,13 +409,21 @@ h1, h2, h3, h4, h5, h6 {
     overflow-x: scroll;
 }
 
+.session-content-header-rankings-container {
+    display: flex;
+    justify-content: space-between;
+
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--text-c3);
+}
+
 .session-content-header {
     padding-bottom: 20px;
     border-bottom: 1px solid var(--text-c3);
 }
 
 .session-no-thumbs-container {
-    margin-top: 20px;
+    margin-top: 10px;
     display: flex;
     flex-direction: column;
     align-items: start;
@@ -444,7 +476,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .session-rankings-link {
-    margin-top: 10px;
+    margin-top: 5px;
+    margin-right: 3px;
 }
 
 .rankings-grid {

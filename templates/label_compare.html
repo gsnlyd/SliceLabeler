@@ -49,19 +49,19 @@
                                 <td>2</td>
                                 <td class="text-gray">2nd Slice</td>
                             </tr>
+                            {% for lv in label_session.label_values()[:7] %}
                             <tr>
-                                <td>3</td>
-                                <td class="text-gray">Neither</td>
+                                <td>{{ 3 + loop.index0 }}</td>
+                                <td class="text-gray">{{ lv }}</td>
                             </tr>
-                            <tr>
-                                <td>4</td>
-                                <td class="text-gray">Not Sure</td>
-                            </tr>
+                            {% endfor %}
                             <tr><td class="keymap-space"></td></tr>
+                            {% if not sort_mode %}
                             <tr>
                                 <td>U</td>
                                 <td class="text-gray">Prev.</td>
                             </tr>
+                            {% endif %}
                             <tr>
                                 <td class="keymap-pad">Space</td>
                                 <td class="text-gray">Next</td>

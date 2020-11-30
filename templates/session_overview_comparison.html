@@ -1,17 +1,19 @@
 {% extends 'session_overview_base.html' %}
 {% block session_content %}
-    <div class="session-rankings-link">
-        <a href="{{ url_for('slice_rankings', session_id=label_session.id) }}" class="text-s text-link text-blue">View Rankings</a>
-    </div>
     <div class="session-content card">
-        <div class="session-content-header">
-            <div class="text-l">{{ label_session.element_count }} Comparisons</div>
-            {% if resume_point is not none %}
-                <a href="{{ url_for('label_compare', label_session=label_session.id, i=resume_point) }}" class="session-resume-button link-button orange text-m">{{ 'Start Labeling' if resume_point == 0 else 'Resume Labeling' }}</a>
-            {% else %}
-                <div class="session-resume-button link-button orange text-m disabled">Resume Labeling</div>
-                <div class="text-xs text-gray">All comparisons already labeled.</div>
-            {% endif %}
+        <div class="session-content-header-rankings-container">
+            <div>
+                <div class="text-l">{{ label_session.element_count }} Comparisons</div>
+                {% if resume_point is not none %}
+                    <a href="{{ url_for('label_compare', label_session=label_session.id, i=resume_point) }}" class="session-resume-button link-button orange text-m">{{ 'Start Labeling' if resume_point == 0 else 'Resume Labeling' }}</a>
+                {% else %}
+                    <div class="session-resume-button link-button orange text-m disabled">Resume Labeling</div>
+                    <div class="text-xs text-gray">All comparisons already labeled.</div>
+                {% endif %}
+            </div>
+            <div class="session-rankings-link">
+                <a href="{{ url_for('slice_rankings', session_id=label_session.id) }}" class="text-m link-button blue">View Rankings</a>
+            </div>
         </div>
         <table class="table text-s text-gray">
             <thead>

@@ -161,8 +161,12 @@ def export_session_json(label_session: LabelSession) -> Dict:
             return val
         return str(val)
 
+    skip_comparisons = label_session.session_type == LabelSessionType.SORT_SLICE.name
+
     elements_rows = []
     for el in label_session.elements:
+        if skip_comparisons and el.is_comparison():
+            continue
         elements_rows.append(','.join((
             conv_str(el.element_index),
             conv_str(el.image_1_name), conv_str(el.slice_1_type), conv_str(el.slice_1_index),

@@ -53,6 +53,9 @@ class SessionElement(db.Model):
     labels: 'List[ElementLabel]' = db.relationship('ElementLabel', back_populates='element',
                                                    order_by='ElementLabel.id')
 
+    def is_comparison(self) -> bool:
+        return self.image_2_name is not None
+
     def current_label_value(self) -> Optional[str]:
         if len(self.labels) == 0:
             return None

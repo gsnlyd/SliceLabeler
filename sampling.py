@@ -22,7 +22,7 @@ def get_slices_from_session(label_session: LabelSession) -> List[ImageSlice]:
 
     elif label_session.session_type == LabelSessionType.SORT_SLICE.name:
         slices = [ImageSlice(el.image_1_name, el.slice_1_index, SliceType[el.slice_1_type])
-                  for el in label_session.elements if el.image_2_name is None]
+                  for el in label_session.elements if not el.is_comparison()]
 
     else:
         raise ValueError('Invalid session type {}'.format(label_session.session_type))
@@ -39,7 +39,7 @@ def get_comparisons_from_session(label_session: LabelSession) -> List[Tuple[Imag
     if label_session.session_type == LabelSessionType.COMPARISON_SLICE.name:
         return [get_comparison_from_element(el) for el in label_session.elements]
     elif label_session.session_type == LabelSessionType.SORT_SLICE.name:
-        return [get_comparison_from_element(el) for el in label_session.elements if el.image_2_name is not None]
+        return [get_comparison_from_element(el) for el in label_session.elements if el.is_comparison()]
     else:
         raise ValueError('Invalid session type {}'.format(label_session.session_type))
 

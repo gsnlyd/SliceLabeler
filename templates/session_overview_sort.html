@@ -1,17 +1,24 @@
 {% extends 'session_overview_base.html' %}
 {% block session_content %}
-    <div class="session-rankings-link">
-        <a href="{{ url_for('slice_rankings', session_id=label_session.id) }}" class="text-s text-link text-blue">View Rankings</a>
-    </div>
     <div class="session-content card">
-        <div class="session-content-header">
-            <div class="text-l">{{ label_session.element_count }} Comparisons</div>
-            {% if true %}
-                <a href="{{ url_for('label_sort_compare', label_session=label_session.id) }}" class="session-resume-button link-button orange text-m">Label</a>
+        <div class="session-content-header-rankings-container">
+            <div>
+                <div class="text-l">{{ slice_elements|length }} Slices, {{ comparison_elements|length }} Comparisons</div>
+                {% if not labels_complete %}
+                    {% set label_text = 'Start Labeling' if comparison_elements|length < 2 else 'Resume Labeling' %}
+                    <a href="{{ url_for('label_sort_compare', label_session=label_session.id) }}" class="session-resume-button link-button orange text-m">{{ label_text }}</a>
+                {% else %}
+                    <div class="session-resume-button link-button orange text-m disabled">Resume Labeling</div>
+                    <div class="text-xs text-gray">All comparisons already labeled.</div>
+                {% endif %}
+            </div>
+            <div class="session-rankings-link">
+            {% if labels_complete %}
+                <a href="{{ url_for('slice_rankings', session_id=label_session.id) }}" class="text-m link-button blue">View Rankings</a>
             {% else %}
-                <div class="session-resume-button link-button orange text-m disabled">Resume Labeling</div>
-                <div class="text-xs text-gray">All comparisons already labeled.</div>
+                <a class="text-m link-button blue disabled">View Rankings</a>
             {% endif %}
+            </div>
         </div>
         <table class="table text-s text-gray">
             <thead>
