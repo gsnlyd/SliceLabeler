@@ -7,6 +7,7 @@ from model import LabelSession
 
 THUMBS_PATH = os.path.join('static', 'thumbnails')
 THUMB_EXTENSION = '.jpg'
+THUMB_MAX_PERCENTILE = 99
 
 
 class ThumbData(NamedTuple):
@@ -40,7 +41,8 @@ def create_thumbnails(label_session: LabelSession):
         d_img = backend.get_image(dataset, sl.image_name)
         slice_thumb_path = os.path.join(dataset_thumbs_path, get_thumbnail_name(sl))
         if not os.path.exists(slice_thumb_path):
-            backend.get_slice(d_img, sl.slice_index, sl.slice_type, 0, None).save(slice_thumb_path)
+            img = backend.get_slice(d_img, sl.slice_index, sl.slice_type, 0, None, THUMB_MAX_PERCENTILE)
+            img.save(slice_thumb_path)
             created += 1
 
     print('Created {} thumbnails for session {} (skipped {}, total {})'.format(

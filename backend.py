@@ -104,7 +104,7 @@ def __load_cached_image(image: DataImage):
 
 
 def get_slice(d_img: DataImage, slice_index: int, slice_type: SliceType,
-              intensity_min: int, intensity_max: Optional[int]) -> Image.Image:
+              intensity_min: int, intensity_max: Optional[int], intensity_max_pct: float = None) -> Image.Image:
     data = __load_cached_image(d_img).get_fdata()
 
     if slice_type == SliceType.SAGITTAL:
@@ -118,7 +118,11 @@ def get_slice(d_img: DataImage, slice_index: int, slice_type: SliceType,
         slice_data = slice_data.squeeze(axis=2)
 
     if intensity_max is None:
-        intensity_max = int(np.max(slice_data))
+        if intensity_max_pct is None:
+            intensity_max = int(np.max(slice_data))
+        else:
+            intensity_max = np.percentile(slice_data, intensity_max_pct)
+
     slice_data = np.clip(slice_data, intensity_min, intensity_max)
     slice_data = ((slice_data / intensity_max) * 255).astype('uint8')
 
