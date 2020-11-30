@@ -52,7 +52,8 @@ class TestSampling(TestCase, TestCaseMixin):
                                                  ['l1', 'l2'], comparisons)
         label_session = sessions.get_session_by_id(db.session, 1)
 
-        ranked_slices = ranking.rank_slices(label_session)
+        rank_results = ranking.rank_slices(label_session)
         check_slices = sampling.get_slices_from_session(label_session)
 
+        ranked_slices = [t[0] for t in rank_results]
         self.assertEqual(set(ranked_slices), set(check_slices))
