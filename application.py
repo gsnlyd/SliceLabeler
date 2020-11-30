@@ -98,7 +98,7 @@ def generate_thumbnails(session_id: int):
     if label_session is None:
         abort(400)
     thumbnails.create_thumbnails(label_session)
-    return redirect(url_for('session_overview', session_id=session_id))
+    return redirect(url_for('slice_rankings', session_id=session_id))
 
 
 @application.route('/datasets')
@@ -133,8 +133,6 @@ def session_overview(session_id: int):
     label_session = sessions.get_session_by_id(db.session, session_id)
     dataset = backend.get_dataset(label_session.dataset)
 
-    has_thumbs = thumbnails.has_thumbnails(label_session)
-
     resume_point = None
     for session_element in label_session.elements:
         if len(session_element.labels) == 0:
@@ -147,32 +145,24 @@ def session_overview(session_id: int):
                                label_session=label_session,
                                dataset=dataset,
                                images=images,
-                               resume_point=resume_point,
-                               has_thumbs=has_thumbs,
-                               needs_thumbs=False)
+                               resume_point=resume_point)
 
     elif label_session.session_type == LabelSessionType.CATEGORICAL_SLICE.name:
         return render_template('session_overview_categorical_slice.html',
                                label_session=label_session,
                                dataset=dataset,
-                               resume_point=resume_point,
-                               has_thumbs=has_thumbs,
-                               needs_thumbs=False)
+                               resume_point=resume_point)
     elif label_session.session_type == LabelSessionType.COMPARISON_SLICE.name:
         return render_template('session_overview_comparison.html',
                                label_session=label_session,
                                dataset=dataset,
-                               resume_point=resume_point,
-                               has_thumbs=has_thumbs,
-                               needs_thumbs=True)
+                               resume_point=resume_point)
     elif label_session.session_type == LabelSessionType.SORT_SLICE.name:
         labels_complete = comparesort.add_next_comparison(db.session, label_session)[0]
         return render_template('session_overview_sort.html',
                                label_session=label_session,
                                dataset=dataset,
                                resume_point=resume_point,
-                               has_thumbs=has_thumbs,
-                               needs_thumbs=True,
                                labels_complete=labels_complete,
                                slice_elements=[el for el in label_session.elements if not el.is_comparison()],
                                comparison_elements=[el for el in label_session.elements if el.is_comparison()])
@@ -194,12 +184,14 @@ def slice_rankings(session_id: int):
     else:
         abort(400)
 
-    thumbnail_names = [thumbnails.get_thumbnail_name(t[0]) for t in ranked_slices]
+    thumbs_data = thumbnails.get_thumbnails(label_session)
+    num_thumbs_missing = len([d for d in thumbs_data if not d.exists])
 
     return render_template('slice_rankings.html',
                            label_session=label_session,
                            ranked_slices=ranked_slices,
-                           thumbnail_names=thumbnail_names)
+                           thumbs_data=thumbs_data,
+                           num_thumbs_missing=num_thumbs_missing)
 
 
 @application.route('/import-session/<string:dataset_name>', methods=['GET', 'POST'])

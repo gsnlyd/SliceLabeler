@@ -2,11 +2,19 @@
 {% block body %}
     <div class="main-container-full main-container-padded">
         <a href="{{ url_for('session_overview', session_id=label_session.id) }}" class="text-m text-link text-orange">Back to {{ label_session.session_name }}</a>
-        <div class="text-xl">{{ label_session.session_name }} Slices (Ranked)</div>
+        <div class="rankings-header">
+            <div class="text-xl">{{ label_session.session_name }} Slices (Ranked)</div>
+            {% if num_thumbs_missing > 0 %}
+                <div class="rankings-generate-thumbs-container">
+                    <div class="rankings-thumbs-missing-info text-xs text-gray weight-medium">Missing {{ num_thumbs_missing }} / {{ thumbs_data|length }} thumbnails</div>
+                    <a href="{{ url_for('generate_thumbnails', session_id=label_session.id) }}" class="text-m link-button yellow">Generate Thumbnails</a>
+                </div>
+            {% endif %}
+        </div>
         <div class="card rankings-grid">
         {% for slice, rank_data in ranked_slices %}
             <div class="align-center">
-                <img class="rankings-img" src="/static/thumbnails/session-{{ label_session.id }}/{{ thumbnail_names[loop.index0] }}">
+                <img class="rankings-img" src="/{{ thumbs_data[loop.index0].path }}">
                 <div>
                     <div class="text-xs text-gray">{{ slice.image_name }}</div>
                     <div class="text-xs text-gray weight-medium">

@@ -15,13 +15,6 @@
             <div class="text-xs text-gray">Labels</div>
             <div class="text-s">{{ ', '.join(label_session.label_values()) }}</div>
         </div>
-        <div>
-            {% if not has_thumbs and needs_thumbs %}
-                <div class="session-no-thumbs-container">
-                    <a href="{{ url_for('generate_thumbnails', session_id=label_session.id) }}" class="session-generate-thumbs text-m link-button yellow">Generate Thumbnails</a>
-                </div>
-            {% endif %}
-        </div>
         {% block session_content %}
         {% endblock %}
     </div>

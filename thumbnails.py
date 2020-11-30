@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, NamedTuple
 
 import backend
 import sampling
@@ -9,27 +9,40 @@ THUMBS_PATH = os.path.join('static', 'thumbnails')
 THUMB_EXTENSION = '.jpg'
 
 
-def get_session_thumbnails_dir_path(label_session: LabelSession) -> str:
-    return os.path.join(THUMBS_PATH, 'session-{}'.format(label_session.id))
+class ThumbData(NamedTuple):
+    path: str
+    exists: bool
+
+
+def get_dataset_thumbnails_path(dataset: backend.Dataset) -> str:
+    return os.path.join(THUMBS_PATH, dataset.name)
 
 
 def get_thumbnail_name(image_slice: backend.ImageSlice) -> str:
     return backend.slice_name(image_slice) + THUMB_EXTENSION
 
 
+def get_thumbnails(label_session: LabelSession) -> List[ThumbData]:
+    d_path = get_dataset_thumbnails_path(backend.get_dataset(label_session.dataset))
+    paths = [os.path.join(d_path, get_thumbnail_name(s)) for s in sampling.get_slices_from_session(label_session)]
+    return [ThumbData(p, os.path.exists(p)) for p in paths]
+
+
 def create_thumbnails(label_session: LabelSession):
     dataset = backend.get_dataset(label_session.dataset)
     slices = sampling.get_slices_from_session(label_session)
 
-    session_thumbs_dir_path = get_session_thumbnails_dir_path(label_session)
-    os.makedirs(session_thumbs_dir_path, exist_ok=True)
+    dataset_thumbs_path = get_dataset_thumbnails_path(dataset)
+    os.makedirs(dataset_thumbs_path, exist_ok=True)
 
+    created = 0
     for sl in slices:
         d_img = backend.get_image(dataset, sl.image_name)
-        slice_thumb_path = os.path.join(session_thumbs_dir_path, backend.slice_name(sl) + '.jpg')
-        backend.get_slice(d_img, sl.slice_index, sl.slice_type, 0, None).save(slice_thumb_path)
-    print('Created {} thumbnails for session {}'.format(len(slices), label_session.session_name))
+        slice_thumb_path = os.path.join(dataset_thumbs_path, get_thumbnail_name(sl))
+        if not os.path.exists(slice_thumb_path):
+            backend.get_slice(d_img, sl.slice_index, sl.slice_type, 0, None).save(slice_thumb_path)
+            created += 1
 
-
-def has_thumbnails(label_session: LabelSession) -> bool:
-    return os.path.exists(get_session_thumbnails_dir_path(label_session))
+    print('Created {} thumbnails for session {} (skipped {}, total {})'.format(
+        created, label_session.session_name, len(slices) - created, len(slices)
+    ))

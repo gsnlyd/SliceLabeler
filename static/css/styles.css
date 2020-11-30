@@ -422,17 +422,6 @@ h1, h2, h3, h4, h5, h6 {
     border-bottom: 1px solid var(--text-c3);
 }
 
-.session-no-thumbs-container {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-}
-
-.session-generate-thumbs {
-    margin-top: 5px;
-}
-
 .session-prompt {
     margin-top: 20px;
 }
@@ -480,7 +469,23 @@ h1, h2, h3, h4, h5, h6 {
     margin-right: 3px;
 }
 
+.rankings-header {
+    margin-top: 50px;
+}
+
+.rankings-generate-thumbs-container {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.rankings-thumbs-missing-info {
+    margin-left: 1px;
+    margin-bottom: 3px;
+}
+
 .rankings-grid {
+    margin-top: 5px;
+
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     justify-items: center;
