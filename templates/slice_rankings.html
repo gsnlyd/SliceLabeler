@@ -14,7 +14,7 @@
         <div class="card rankings-grid">
         {% for slice, rank_data in ranked_slices %}
             <div class="align-center">
-                <img class="rankings-img" src="/{{ thumbs_data[loop.index0].path }}">
+                <img class="rankings-img" src="/{{ thumbs_data[slice].path }}">
                 <div>
                     <div class="text-xs text-gray">{{ slice.image_name }}</div>
                     <div class="text-xs text-gray weight-medium">

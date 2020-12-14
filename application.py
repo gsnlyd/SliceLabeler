@@ -185,7 +185,7 @@ def slice_rankings(session_id: int):
         abort(400)
 
     thumbs_data = thumbnails.get_thumbnails(label_session)
-    num_thumbs_missing = len([d for d in thumbs_data if not d.exists])
+    num_thumbs_missing = len([d for d in thumbs_data.values() if not d.exists])
 
     return render_template('slice_rankings.html',
                            label_session=label_session,
