@@ -307,8 +307,11 @@ def create_comparison_session(dataset_name: str):
             if form.comparisons.data == 'create':
                 slices = sampling.sample_slices(dataset, slice_type, form.image_count.data, form.slice_count.data,
                                                 form.min_slice_percent.data, form.max_slice_percent.data)
-                comparisons = sampling.sample_comparisons(slices, form.comparison_count.data,
-                                                          form.max_comparisons_per_slice.data)
+                if form.comparison_count.data is None:
+                    comparisons = sampling.all_comparisons(slices)
+                else:
+                    comparisons = sampling.sample_comparisons(slices, form.comparison_count.data,
+                                                              form.max_comparisons_per_slice.data)
             else:
                 from_session = sessions.get_session_by_id(db.session, int(form.comparisons.data))
                 comparisons = sampling.get_comparisons_from_session(from_session)

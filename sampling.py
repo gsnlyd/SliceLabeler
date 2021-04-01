@@ -1,3 +1,4 @@
+import itertools
 import random
 from typing import List, Tuple, Optional
 
@@ -74,6 +75,12 @@ def sample_slices(dataset: Dataset, slice_type: SliceType, image_count: int, sli
 
     slices = list(set(slices))  # Remove duplicates
     return slices
+
+
+def all_comparisons(slices: List[ImageSlice]) -> List[Tuple[ImageSlice, ImageSlice]]:
+    comparisons = list(itertools.combinations(slices, 2))
+    random.shuffle(comparisons)
+    return comparisons
 
 
 def sample_comparisons(slices: List[ImageSlice], comparison_count: int,

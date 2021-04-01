@@ -64,7 +64,7 @@ class CreateComparisonSessionForm(FlaskForm):
                                render_kw={'placeholder': 1000,
                                           'value': 1000})
 
-    comparison_count = IntegerField('Number of Comparisons', validators=[ComparisonNumberRange(min=1)],
+    comparison_count = IntegerField('Number of Comparisons', validators=[Optional(), ComparisonNumberRange(min=1)],
                                     render_kw={'placeholder': 2000,
                                                'value': 2000})
 
