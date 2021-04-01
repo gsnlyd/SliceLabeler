@@ -324,6 +324,13 @@ def create_comparison_session(dataset_name: str):
                            form=form)
 
 
+SLICE_SESSION_NAMES = (
+    LabelSessionType.COMPARISON_SLICE.name,
+    LabelSessionType.CATEGORICAL_SLICE.name,
+    LabelSessionType.SORT_SLICE.name
+)
+
+
 @application.route('/create-sort-session/<string:dataset_name>', methods=['GET', 'POST'])
 def create_sort_session(dataset_name: str):
     dataset = backend.get_dataset(dataset_name)
@@ -341,6 +348,10 @@ def create_sort_session(dataset_name: str):
     form.image_count.validators = [
         NumberRange(min=1, max=total_image_count, message='Must be between %(min)s and %(max)s (the dataset size).')
     ]
+    for sess in sessions.get_sessions(db.session, dataset):
+        t = sess.session_type
+        if t in SLICE_SESSION_NAMES:
+            form.slices_from.choices.append((str(sess.id), sess.session_name))
 
     if form.validate_on_submit():
         if form.session_name.data in [se.session_name for se in current_sessions]:
@@ -348,9 +359,13 @@ def create_sort_session(dataset_name: str):
         elif form.min_slice_percent.data >= form.max_slice_percent.data:
             form.max_slice_percent.errors.append('Max must be greater than min.')
         else:
-            slice_type = backend.SliceType[form.slice_type.data]
-            slices = sampling.sample_slices(dataset, slice_type, form.image_count.data, form.slice_count.data,
-                                            form.min_slice_percent.data, form.max_slice_percent.data)
+            if form.slices_from.data == 'create':
+                slice_type = backend.SliceType[form.slice_type.data]
+                slices = sampling.sample_slices(dataset, slice_type, form.image_count.data, form.slice_count.data,
+                                                form.min_slice_percent.data, form.max_slice_percent.data)
+            else:
+                from_session = sessions.get_session_by_id(db.session, int(form.slices_from.data))
+                slices = sampling.get_slices_from_session(from_session)
 
             sessions.create_sort_slice_session(db.session, form.session_name.data, form.prompt.data, dataset, slices)
             return redirect(url_for('dataset_overview', dataset_name=dataset.name))

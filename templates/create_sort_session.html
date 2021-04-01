@@ -16,6 +16,12 @@
                 {{ form.prompt(class_='form-field form-input text-m') }}
             </div>
         </div>
+        <div class="form-section form-section-border">
+            <div class="form-group form-group-md">
+                {{ form_components.label_and_errors(form.slices_from) }}
+                {{ form.slices_from(class_='form-select text-m') }}
+            </div>
+        </div>
         <div class="form-section form-section-border" id="comparison-list-field-container">
             <div class="form-group form-group-md">
                 {{ form_components.label_and_errors(form.slice_type) }}

@@ -89,6 +89,7 @@ class CreateSortSessionForm(FlaskForm):
     prompt = StringField('Label Prompt',
                          validators=[Length(0, 100, LENGTH_MESSAGE)],
                          render_kw={'placeholder': 'Which slice has more severe artifacts?'})
+    slices_from = SelectField('Use Slices From', choices=[('create', 'Create New')])
     slice_type = SelectField('Orientation', choices=[('SAGITTAL', 'Sagittal'),
                                                      ('CORONAL', 'Coronal'),
                                                      ('AXIAL', 'Axial')])
