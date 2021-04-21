@@ -70,7 +70,7 @@ To deactivate the virtual environment when you're done, you can use the ```deact
 deactivate
 ```
 
-## User Guide:
+## User Guide
 
 ### Datasets
 
