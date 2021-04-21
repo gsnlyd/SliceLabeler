@@ -48,7 +48,7 @@ SliceLabeler/
 
 SliceLabeler is a Python Flask app. To run it, activate the virtualenv and start the Flask server using the following commands.
 
-Then, navigate to ```127.0.0.1:5000``` in a browser window to use the application.
+Then, navigate to ```http://127.0.0.1:5000/``` in a browser window to use the application.
 
 #### Mac/Linux:
 ```shell script
