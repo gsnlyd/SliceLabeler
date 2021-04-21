@@ -1,4 +1,6 @@
-## Browser-based GUI for labeling MRI volumes and slices.
+# SliceLabeler
+### Browser-based GUI for labeling MRI volumes and slices.
+
 ### Python Version:
 The latest version of Python 3 is recommended.
 
@@ -6,7 +8,8 @@ Python 3.6 or newer is required.
 ### Installation:
 First, clone the repo and cd into the new directory.
 
-Then, create a python virtual environment and install the dependencies:
+Then, create a python virtual environment and install the dependencies using the following commands:
+
 #### Mac/Linux:
 ```shell script
 python3 -m venv venv
@@ -21,7 +24,30 @@ venv\Scripts\activate.bat
 pip install -r requirements.txt
 ```
 
-### Usage:
+### Data:
+
+SliceLabeler expects MRI volumes in the following directory structure:
+
+```
+SliceLabeler/
+  data/
+    datasets/
+      my_dataset_1/
+        image_1.nii.gz
+        image_2.nii.gz
+        ...
+      my_dataset_2/
+        image_1.nii.gz
+        image_2.nii.gz
+        ...
+```
+
+### Run:
+
+SliceLabeler is a Python Flask app. To run it, activate the virtualenv and start the Flask server using the following commands.
+
+Then, navigate to ```127.0.0.1:5000``` in a browser window to use the application.
+
 #### Mac/Linux:
 ```shell script
 source venv/bin/activate
@@ -35,7 +61,9 @@ set FLASK_APP=application.py
 flask run
 ```
 
-To deactivate the virtual environment when you're done:
+To deactivate the virtual environment when you're done, you can use the ```deactivate``` command:
+
+#### Mac/Linux/Windows:
 ```shell script
 deactivate
 ```
