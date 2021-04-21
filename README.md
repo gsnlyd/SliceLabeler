@@ -1,6 +1,8 @@
 # SliceLabeler
 ### Browser-based GUI for labeling MRI volumes and slices.
 
+## Quickstart
+
 ### Python Version:
 The latest version of Python 3 is recommended.
 
