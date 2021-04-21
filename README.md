@@ -76,7 +76,7 @@ deactivate
 
 ![Datasets Page Screenshot](images/datasets.jpg)
 
-This page shows all of your datasets from the ```data/datasets``` directory.
+This page shows all of your datasets from the ```data/datasets``` directory. To **view a dataset's overview**, click on the "View Dataset" button.
 
 ### Dataset Overview
 
