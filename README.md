@@ -44,9 +44,13 @@ deactivate
 
 ### Datasets
 
+![Datasets Page Screenshot](images/datasets.jpg)
+
 This page shows all of your datasets from the ```data/datasets``` directory.
 
 ### Dataset Overview
+
+![Dataset Overview Page Screenshot](images/dataset_overview.jpg)
 
 This page displays an overview of a dataset and its labeling sessions. Labeling sessions allow you to designate a subset of your dataset for labeling and share it with collaborators.
 
@@ -63,9 +67,13 @@ There are four types of labeling session:
 
 ### Create Session
 
+![Create Session Page Screenshot](images/create_comparison_session.jpg)
+
 This page shows the options for the creation of a new labeling session. Each session type has a different set of options. Follow the on-screen instructions to create a session.
 
 ### Session Overview
+
+![Session Overview Page Screenshot](images/comparison_session_overview.jpg)
 
 This page shows all of the details for a labeling session, including its metadata and all of your existing labels.
 
@@ -78,6 +86,8 @@ From here you can:
 - **View the rankings for your slices** (for comparison sessions) by clicking the "View Rankings" button.
 
 ### Labeling Interface
+
+![Labeling Interface Screenshot](images/compare_interface.jpg)
 
 This is where you label your data. The interface for each session type is slightly different, but all of them include similar functionality.
 
