@@ -131,3 +131,6 @@ There are also keyboard shortcuts for all of these actions, as shown in the keym
 ### See also:
 - [Venv documentation](https://docs.python.org/3/library/venv.html)
 - [Flask documentation](https://flask.palletsprojects.com/en/1.1.x/quickstart/)
+
+### Research article that used the app
+- https://arxiv.org/abs/2202.04823
